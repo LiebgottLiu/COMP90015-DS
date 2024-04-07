@@ -29,6 +29,10 @@ import javax.swing.JTextArea;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
 
+
+//Student Name: Zhuoyang Liu
+//Student ID: 917183
+
 public class Client_UI extends Thread{
 
 	private static final long seriaVersionUID = 1L;
@@ -100,7 +104,7 @@ public class Client_UI extends Thread{
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 
-		
+
 
 		editorPane = new JEditorPane();
 		editorPane.setToolTipText("Means");
@@ -133,41 +137,41 @@ public class Client_UI extends Thread{
 		JLabel lblNewLabel_3 = new JLabel("New Meaning(op)");
 		lblNewLabel_3.setBounds(10, 168, 114, 15);
 		frame.getContentPane().add(lblNewLabel_3);
-		
+
 		JTextArea textArea = new JTextArea();
 		textArea.setToolTipText("inpu_means");
 		textArea.setBounds(10, 182, 138, 69);
 		frame.getContentPane().add(textArea);
-		
+
 		textDictionary = new JTextArea();
 		textDictionary.setToolTipText("Server_text");
 		textDictionary.setEditable(false);
 		textDictionary.setBounds(158, 95, 266, 156);
 		frame.getContentPane().add(textDictionary);
-		
+
 		JLabel lblNewLabel_4 = new JLabel("Server message");
 		lblNewLabel_4.setBounds(158, 67, 131, 21);
 		frame.getContentPane().add(lblNewLabel_4);
-		
+
 		JButton btnNewButton_1 = new JButton("Send Request");
 		btnNewButton_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
+
 				String selectedOption = (String) comboBox.getSelectedItem();
 				String word = textField.getText();
 				String means = textArea.getText();
 				if((selectedOption == "Update" ||selectedOption == "Add") && (means == "" || means == null)) {
 					JOptionPane.showMessageDialog(frame, "Please enter the meaning of the word.", "Missing Meaning", JOptionPane.WARNING_MESSAGE);
-		            return;
+					return;
 				}
 
-//				System.out.println(selectedOption);
+				//				System.out.println(selectedOption);
 				textDictionary.setText(null);
 				editorPane.setText(null);
 				textArea.setText(null);
 				String request = "";
-				
+
 				if((word.equals("") || means.equals("")) &&(selectedOption == "Update" ||selectedOption == "Add") ) {
 					JOptionPane.showMessageDialog(btnNewButton_1 ,"Missing either word or meanning ");
 					return;
@@ -176,7 +180,7 @@ public class Client_UI extends Thread{
 					JOptionPane.showMessageDialog(btnNewButton_1 ,"Please Enter the word ");
 					return;
 				}
-				
+
 				switch (selectedOption){
 				case "Add":
 					request = "Add" + ":" + word + "/" + means +"\n";
@@ -199,7 +203,7 @@ public class Client_UI extends Thread{
 				}catch(Exception e1) {
 					e1.printStackTrace();
 				}
-				
+
 			}
 		});
 		btnNewButton_1.setBounds(299, 26, 125, 32);

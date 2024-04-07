@@ -1,5 +1,7 @@
 package Server;
 
+//Student Name: Zhuoyang Liu
+//Student ID: 917183
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -98,21 +100,18 @@ public class Local_File_handler {
 					}
 				}
 			}catch (FileNotFoundException e) {
-			    System.err.println("File not found: " + e.getMessage());
+				System.err.println("File not found: " + e.getMessage());
 			} catch (UnsupportedEncodingException e) {
-			    System.err.println("Unsupported encoding: " + e.getMessage());
+				System.err.println("Unsupported encoding: " + e.getMessage());
 			} catch (IOException e) {
-			    System.err.println("Error reading file: " + e.getMessage());
+				System.err.println("Error reading file: " + e.getMessage());
 			} catch (Exception e) {
-			    System.err.println("An unexpected error occurred: " + e.getMessage());
-			    e.printStackTrace(); 
+				System.err.println("An unexpected error occurred: " + e.getMessage());
+				e.printStackTrace(); 
 
 
 			}
 		}
-
-
-
 	}
 
 	private void showMessageDialog(String message) {
