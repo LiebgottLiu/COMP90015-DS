@@ -44,7 +44,7 @@ public class Dic_server {
 				Socket request = dic_server.accept();
 				new Connection(request, dict).start();	
 				counter++;
-				System.out.println("client conection number" + counter +" " +port + " request: "+request);
+				System.out.println("client conection number" + counter +" " +port + " request: "+request + "\n");
 			}catch(Exception e) {	
 				e.printStackTrace();
 			}
