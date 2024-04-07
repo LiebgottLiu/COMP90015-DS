@@ -30,6 +30,10 @@ public class Dic_Server_main {
 				FileName = args[1]; 
 			}
 		}
+		//			else {
+//			System.err.println("Usage: java DictionaryServer <port> <dictionary-file>");
+//            System.exit(1);
+//		}
 
 		Dic_server dic_server = new Dic_server(port, FileName); 
 		dic_server.initialize();

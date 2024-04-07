@@ -18,6 +18,8 @@ public class Client {
 		
 		int port = 8080;
 		String address = "localhost";
+		Client_UI gui = new Client_UI();
+
 		
 		if(args.length == 2) {
 			if(args[1] != null) {
@@ -29,7 +31,8 @@ public class Client {
 		}
 
 		try {
-			client = new Socket(address,port);
+			 client = new Socket(address,port);
+			 gui.start();
 			
 		}catch( Exception e) {
 			e.printStackTrace();
@@ -37,7 +40,8 @@ public class Client {
 		
 		try {
 			reader = new BufferedReader(new InputStreamReader(client.getInputStream(), "UTF-8"));
-	        writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), "UTF-8"));
+			writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), "UTF-8"));
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 			
@@ -46,19 +50,15 @@ public class Client {
 		
 		while(true) {
 			
-			System.out.println("in loop");
 			try {
-				String message = reader.readLine();
-				System.out.println(message);
-				
-//				if (reader == null) {
-//		            System.out.println("Reader is null. Exiting loop.");
-//		            break;
-//		        }
-//				String msg = reader.readLine();
-//		        if (msg != null && !msg.isEmpty()) {
-//		            System.out.println("message: " + msg);
-//		        }
+				if (reader == null) {
+		            System.out.println("Reader is null. Exiting loop.");
+		            break;
+		        }
+				String msg = reader.readLine();
+		        if (msg != null || !msg.isEmpty()) {
+		            System.out.println("message: " + msg);
+		        }
 					
 			}catch(Exception e) {
 				e.printStackTrace();

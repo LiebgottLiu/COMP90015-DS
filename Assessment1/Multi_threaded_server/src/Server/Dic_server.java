@@ -27,12 +27,11 @@ public class Dic_server {
 	public void initialize() {
 		ServerSocketFactory factory = ServerSocketFactory.getDefault();
 		ServerSocket dic_server = null;
-		Socket request = null;
 		read_dict();
 
 		try {
 			dic_server = new ServerSocket(this.port);
-			System.out.println("Server started, listening on port :"+ port +"...");
+			System.out.println("Server started, listening on port :"+ port );
 //			dic_server = new ServerSocket(8080);
 			
 		} catch (IOException e) {
@@ -42,11 +41,12 @@ public class Dic_server {
 		
 		while(true) {
 			try {
-				request = dic_server.accept();
+				Socket request = dic_server.accept();
 				new Connection(request, dict).start();	
 				counter++;
 				System.out.println("client conection number" + counter +" " +port + " request: "+request);
 			}catch(Exception e) {	
+				e.printStackTrace();
 			}
 			
 			

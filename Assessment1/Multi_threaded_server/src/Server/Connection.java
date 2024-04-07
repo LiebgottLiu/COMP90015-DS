@@ -10,10 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Connection extends Thread {
 	
-	Socket socket = null;
-	ConcurrentHashMap<String,String> dict;
-	BufferedReader reader;
-	BufferedWriter writer;
+	private  Socket socket = null;
+	private  ConcurrentHashMap<String,String> dict;
+	private  BufferedReader reader;
+	private  BufferedWriter writer;
 	
 	public Connection(Socket socket, ConcurrentHashMap<String, String> dict1) {
 		this.socket = socket;
@@ -28,10 +28,10 @@ public class Connection extends Thread {
 	            System.out.println("Socket is null. Exiting thread.");
 	            return; 
 	        }
-			reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream(),"UTF-8"));
-			writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream(), "UTF-8"));
-			writer.write("hello");
-			writer.flush();
+			reader = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
+			writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+//			writer.write("hello \n");
+//			writer.flush();
 			System.out.println("message send");
 		} catch (Exception e) {
 			e.printStackTrace();
