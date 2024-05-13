@@ -65,7 +65,7 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 	}
 
 	@Override
-	public void deleteClient(String name) throws IOException {
+	public void deleteClient(String name) throws RemoteException {
 		System.out.println("Remove " + name);
 		for(CanvasClientInterface c : this.clientManager) {
 			if(c.getName().equals(name)) {
@@ -90,7 +90,7 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 
 	// broadcast to update all client
 	@Override
-	public void broadCastCancas(MessageWrapper message) throws RemoteException{
+	public void broadCastCancas(CanvasMessageInterface message) throws RemoteException{
 		for(CanvasClientInterface c: this.clientManager) {
 			c.syncCanvas(message);
 		}

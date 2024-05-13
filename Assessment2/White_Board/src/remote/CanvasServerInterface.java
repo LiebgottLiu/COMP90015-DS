@@ -15,15 +15,15 @@ public interface CanvasServerInterface extends Remote {
 
 	public void deleteClient(String name) throws RemoteException, IOException;
 
-	public void broadCastCancas(MessageWrapper message)throws RemoteException;
+	public void broadCastCancas(CanvasMessageInterface message)throws RemoteException;
 
-	public byte[] sendImage()throws IOException;
+	public byte[] sendImage()throws IOException, RemoteException;
 
 	public void refreshCanvas() throws RemoteException;
 
 	public void sedOpenedImage(byte[] byteArray)throws IOException, RemoteException;
 
-	public void addChat(String string) throws RemoteException;
+	public void addChat(String text) throws RemoteException;
 
 	public void removeAll() throws IOException, RemoteException;
 

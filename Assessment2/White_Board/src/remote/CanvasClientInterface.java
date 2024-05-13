@@ -7,7 +7,7 @@ import java.util.Set;
 import remote.CanvasMessageInterface;
 import remote.CanvasServerInterface;
 
-public interface CanvasClientInterface {
+public interface CanvasClientInterface extends Remote {
 
 	public String getName() throws RemoteException;
 
@@ -27,7 +27,7 @@ public interface CanvasClientInterface {
 	
 	public void refreshCanvas()throws RemoteException;
 	
-	public void closeUI()throws RemoteException, IOException;
+	public void closeUI()throws RemoteException;
 	
 	public byte[] sendImage()throws RemoteException, IOException;
 	
