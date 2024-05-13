@@ -397,7 +397,9 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		currUsers.setMinimumSize(new Dimension(100,150));
 		if(!isManager) {
 			currUsers.setMinimumSize(new Dimension(100,290));
-		}else {
+		}
+		
+		if(isManager) {
 			// remove user
 			list.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent evt) {
@@ -657,17 +659,17 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	@Override
 	public void setName(String client_name) throws RemoteException {
 		this.clientName = client_name;
-		
+		return;
 	}
 
 	@Override
-	public void assignManager() throws RemoteException {
+	public void assignManager() {
 		this.isManager = true;
 		
 	}
 
 	@Override
-	public boolean getManager() throws RemoteException {
+	public boolean getManager() {
 		return this.isManager;
 	}
 
@@ -685,14 +687,14 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	}
 
 	@Override
-	public boolean getPermission() throws RemoteException {
+	public boolean getPermission() {
 		
 		return this.havePermission;
 	}
 	
 	@Override
-	public void setPermission(boolean permission) {
-		this.havePermission = permission;
+	public void setPermission(boolean flag) {
+		this.havePermission = flag;
 		
 	}
 
@@ -764,7 +766,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	}
 
 	@Override
-	public void refreshCanvas() throws RemoteException {
+	public void refreshCanvas() {
 		if(this.isManager == false) {
 			this.canvasUI.reset();
 		}
@@ -820,7 +822,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	}
 	
 	//main functions
-	public static void main(String args[]) throws NotBoundException, IOException {
+	public static void main(String args[]) throws NotBoundException, MalformedURLException, NotBoundException {
 		//set the connection informations
 		String hostName = "localhost";
 		String portNumber = "8080";

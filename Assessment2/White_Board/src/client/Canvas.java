@@ -143,27 +143,20 @@ public class Canvas extends JComponent {
 				endPt = e.getPoint();
 				Shape shape = null;
 				if(graphics != null) {
-					switch (mode){
-					case "line":
+					if (mode.equals("line")){
 						shape = makeLine(shape, startPt, endPt);
-						break;
-					case "draw":
+					}else if (mode.equals("draw")){
 						shape = makeLine(shape, startPt, endPt);
-						break;
-					case "rect":
+					}else if (mode.equals("rect")){
 						shape = makeRect(shape, startPt, endPt);
-						break;
-					case "circle":
+					}else if(mode.equals("circle")){
 						shape = makeCircle(shape, startPt, endPt);
-						break;
-					case "triangle":
+					}else if (mode.equals ("triangle")){:
 						shape = makeOval(shape, startPt, endPt);
-						break;
-					case "text":
+					}else if(mode.equals("text")){:
 						text = JOptionPane.showInputDialog("Adding text here");
-						if(text == null) {
+						if(text == null) 
 							text = "";
-						}
 						drawPreviousCanvas();
 						graphics.setFont(new Font("TimesRoman", Font.PLAIN, 22));
 						graphics.drawString(text, endPt.x, endPt.y);
@@ -263,7 +256,7 @@ public class Canvas extends JComponent {
 		previousCanvas = new BufferedImage(cm,raster,false,null);
 	}
 	
-	// caver the current canvas with previous canvas states
+	// cover the current canvas with previous canvas states
 	public void drawPreviousCanvas() {
 		drawImage(previousCanvas);
 	}
@@ -438,6 +431,7 @@ public class Canvas extends JComponent {
 		return shape;
 		
 	}
+}
 
 
 
