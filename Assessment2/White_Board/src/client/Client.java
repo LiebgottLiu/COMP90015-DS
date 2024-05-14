@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
@@ -303,52 +304,71 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		
 		
 		LineBorder border = new LineBorder(Color.black,2);
-		
+
 		//free draw
-		Icon icon = new ImageIcon("src");
-		drawBtn = new JButton(icon);
+		Icon icon = new ImageIcon(getClass().getResource("/icon/pencil.png"));
+
+		// Get the image from the original icon
+		Image originalImage = ((ImageIcon) icon).getImage();
+
+		// Scale the image to the desired dimensions
+		Image scaledImage = originalImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+
+		// Create a new ImageIcon with the scaled image
+		Icon scaledIcon = new ImageIcon(scaledImage);
+
+		// Create the button with the scaled icon
+		drawBtn = new JButton(scaledIcon);
 		drawBtn.setToolTipText("free draw");
 		drawBtn.setBorder(border);
 		drawBtn.addActionListener(actionListener);
 		
 		//draw line
 		border = new LineBorder(new Color(238,238,238),2);
-		icon = new ImageIcon("src");
-		lineBtn = new JButton(icon);
+		icon = new ImageIcon(getClass().getResource("/icon/nodes.png"));
+		originalImage = ((ImageIcon) icon).getImage();
+
+		// Scale the image to the desired dimensions
+		scaledImage = originalImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+
+		// Create a new ImageIcon with the scaled image
+		scaledIcon = new ImageIcon(scaledImage);
+
+		lineBtn = new JButton(scaledIcon);
 		lineBtn.setToolTipText("Draw line");
 		lineBtn.setBorder(border);
 		lineBtn.addActionListener(actionListener);
 		
 		// draw rectange
-		icon = new ImageIcon("src");
+		icon = new ImageIcon("/icon/rectangular-shape-outline.png");
 		rectBtn = new JButton(icon);
 		rectBtn.setToolTipText("Draw rectangle");
 		rectBtn.setBorder(border);
 		rectBtn.addActionListener(actionListener);
 		
 		// draw circle
-		icon = new ImageIcon("src");
+		icon = new ImageIcon("/icon/oval.png");
 		circleBtn = new JButton(icon);
 		circleBtn.setToolTipText("Draw circle");
 		circleBtn.setBorder(border);
 		circleBtn.addActionListener(actionListener);
 		
 		//draw oval
-		icon = new ImageIcon("src");
+		icon = new ImageIcon("/icon/aoval.png");
 		ovalBtn = new JButton(icon);
 		ovalBtn.setToolTipText("Draw oval");
 		ovalBtn.setBorder(border);
 		ovalBtn.addActionListener(actionListener);
 		
 		//set text
-		icon = new ImageIcon("src");
+		icon = new ImageIcon("/icon/text.png");
 		textBtn = new JButton(icon);
 		textBtn.setToolTipText("Draw text");
 		textBtn.setBorder(border);
 		textBtn.addActionListener(actionListener);
 		
 		//set eraser
-		icon = new ImageIcon("src");
+		icon = new ImageIcon("/icon/eraser.png");
 		eraserBtn = new JButton(icon);
 		eraserBtn.setToolTipText("eraser");
 		eraserBtn.setBorder(border);
