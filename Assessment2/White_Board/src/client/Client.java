@@ -50,6 +50,8 @@ import javax.swing.Icon;
 import remote.CanvasClientInterface;
 import remote.CanvasMessageInterface;
 import remote.CanvasServerInterface;
+import server.util;
+
 import java.io.ByteArrayInputStream;
 import static javax.swing.GroupLayout.Alignment;
 public class Client extends UnicastRemoteObject implements CanvasClientInterface {
@@ -64,7 +66,9 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	private JFrame frame;
 	private DefaultListModel<String> userList;
 	private DefaultListModel<String> chatList;
-	private JButton clearBtn, saveBtn, saveAsBtn, openBtn,blackBtn,blueBtn,yelloBtn,redBtn,greenBtn;
+	private JButton clearBtn, saveBtn, saveAsBtn, openBtn, closeButton;
+	private JButton blackBtn, blueBtn, yellowBtn, redBtn, greenBtn, pinkBtn, purpleBtn, orangeBtn, grayBtn, limeBtn, magentaBtn, aoiBtn, skyBtn, cyanBtn, lightGrayBtn;
+
 	private JButton drawBtn, lineBtn,rectBtn,circleBtn,ovalBtn,textBtn,eraserBtn;
 	private JScrollPane msgArea;
 	private JTextArea tellColor, displayColor;
@@ -76,6 +80,8 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	private String picName;
 	private String picPath;
 	private Hashtable<String, Point> startPoints = new Hashtable<String,Point>();
+	
+	private String ioMEssage = "There is an IO error, please double check";
 	
 
 	protected Client() throws RemoteException {
@@ -94,53 +100,27 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 			LineBorder empty = new LineBorder(new Color(238,238,238),2);
 			LineBorder box = new LineBorder(Color.black,2);
 			 
-			if(e.getSource() == clearBtn) {
-				int choice = JOptionPane.showConfirmDialog(frame, "Do you want to set a new page?", "New Page Confirmation", JOptionPane.YES_NO_OPTION);
-				if (choice == JOptionPane.YES_OPTION) {
-		            // User clicked "Yes"
-		            canvasUI.reset();
-		        }
-				if(isManager) {
-					try {
-					    server.refreshCanvas();
-					} catch (RemoteException e1) {
-					    JOptionPane.showMessageDialog(null, "Canvas server is down, please save and exit!");
-					}
-	            }
-			}else if (e.getSource() == openBtn) {
-				try {
-					open();
-				}catch(IOException e1) {
-					System.err.println("There is an IO error, please double check");
-				}
-			}else if (e.getSource() == saveBtn) {
-				try {
-					save();
-				}catch(IOException e1) {
-					System.err.println("There is an IO error, please double check");
-				}
-			}else if (e.getSource() == saveAsBtn) {
-				try {
-					saveAs();
-				}catch(IOException e1) {
-					System.err.println("There is an IO error, please double check");
-				}
-			}
-			// select colors 
-			else if (e.getSource() == blackBtn) {
-				canvasUI.black();
-			}else if (e.getSource() == blueBtn) {
-				canvasUI.blue();
-			}else if (e.getSource() == yelloBtn) {
-				canvasUI.yellow();
-			}else if (e.getSource() == redBtn) {
-				canvasUI.red();
-			}else if (e.getSource() == greenBtn) {
-				canvasUI.green();
-			}
+			//init the function buttons 
+			buttonFunctions(e.getSource());
+			//the chosen color will be boxed with black border
+			drawButtons(e,empty,box);
+
 			
-			// drawing shapes
-			else if (e.getSource() == drawBtn) {
+
+			
+			//select the color buttons 
+			if (e.getSource() == blackBtn || e.getSource() == blueBtn || e.getSource() == yellowBtn || 
+    			e.getSource() == redBtn || e.getSource() == greenBtn || e.getSource() == pinkBtn || 
+    			e.getSource() == purpleBtn || e.getSource() == orangeBtn || e.getSource() == grayBtn || 
+    			e.getSource() == limeBtn || e.getSource() == magentaBtn || e.getSource() == aoiBtn || 
+    			e.getSource() == skyBtn || e.getSource() == cyanBtn || e.getSource() == lightGrayBtn) {
+    				displayColor.setBackground(canvasUI.getCurrentColor());
+				}
+		}
+
+		//select the function buttons
+		private void drawButtons(ActionEvent e, LineBorder empty, LineBorder box) {
+			if(e.getSource() == drawBtn){
 				canvasUI.draw();
 				for(JButton button : btnList) {
 					if(button == drawBtn) {
@@ -204,13 +184,139 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 					}
 				}
 			}
-			
-			if (e.getSource() == blackBtn || e.getSource() == blueBtn || e.getSource() == yelloBtn || e.getSource() == redBtn) {
-				displayColor.setBackground(canvasUI.getCurrentColor());
-			}
 		}
 	};
-	
+		
+	//buttonfunction facteds;
+	private void buttonFunctions(Object event){
+		functionButtons(event);
+		colorButtons(event);
+	}
+
+	// color button selections , set the color to canvas
+	private void colorButtons(Object event) {
+		if (event == blackBtn) {
+			canvasUI.black();
+		} else if (event == blueBtn) {
+			canvasUI.blue();
+		} else if (event == yellowBtn) {
+			canvasUI.yellow();
+		} else if (event == redBtn) {
+			canvasUI.red();
+		} else if (event == greenBtn) {
+			canvasUI.green();
+		} else if (event == pinkBtn) {
+			canvasUI.pink();
+		} else if (event == purpleBtn) {
+			canvasUI.purple();
+		} else if (event == orangeBtn) {
+			canvasUI.orange();
+		} else if (event == grayBtn) {
+			canvasUI.gray();
+		} else if (event == limeBtn) {
+			canvasUI.lime();
+		} else if (event == magentaBtn) {
+			canvasUI.magenta();
+		} else if (event == aoiBtn) {
+			canvasUI.aoi();
+		} else if (event == skyBtn) {
+			canvasUI.sky();
+		} else if (event == cyanBtn) {
+			canvasUI.cyan();
+		} else if (event == lightGrayBtn) {
+			canvasUI.lightGray();
+		}
+	}
+
+	// select the manager function buttons
+	private void functionButtons(Object event){
+	    // the buttons on the right side of the screen
+		if(event == clearBtn){
+			clearLog();
+		}else if(event == openBtn){
+		    openLog();
+		}else if(event == saveBtn){
+		    saveLog();
+		}else if(event == saveAsBtn){
+		    saveAsLog();
+		}else if(event == closeButton){
+			closeLog();
+		}
+	}
+
+	//new board logic
+	private void clearLog(){
+	    int choice = JOptionPane.showConfirmDialog(frame, "", 
+		"New Page Confirmation", JOptionPane.YES_NO_OPTION);
+		if (choice == JOptionPane.YES_OPTION) {
+			// User clicked "Yes"
+			canvasUI.reset();
+		}
+		if(isManager) {
+			managerUpdate();
+		}
+	}
+
+	//update the manager canvas to user
+	private void managerUpdate(){
+		try {
+			server.refreshCanvas();
+		} catch (RemoteException e1) {
+			Util.popupDialog("Canvas server is down, please save and exit!");
+		}
+	}
+
+	//close button logic
+	private void closeLog(){
+		if (JOptionPane.showConfirmDialog(frame,
+								"Do you want to close the Canvas", "Close Paint Board?", 
+								JOptionPane.YES_NO_OPTION, 
+								JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+							try {
+								server.removeAll();
+								updateUserList(server.getClientList());
+							}catch(RemoteException e) {
+								Util.popupDialog("Canvas server is down, please save and exit.");
+								
+							} catch (IOException e) {
+								Util.popupDialog(ioMEssage);
+							}finally {
+								System.exit(0);
+							}
+								
+						}
+	    
+	}
+
+	//save As logic
+	private void saveAsLog(){
+		try {
+			saveAs();
+		}catch(IOException e1) {
+			util.errorMessage(ioMEssage);
+		}
+	}
+
+	//save image logic
+	private void saveLog(){
+	    try {
+			save();
+		}catch(IOException e1) {
+			util.errorMessage(ioMEssage);
+		}
+	}
+
+	//openlocal image logic
+	private void openLog(){
+		try {
+			open();
+		}catch(IOException e1) {
+			util.errorMessage(ioMEssage);
+		}
+	}
+
+
+	// open loacl iamges 
 	private void open() throws IOException{
 		FileDialog opendialog = new FileDialog(frame, "open an iamge", FileDialog.LOAD);
 		opendialog.setVisible(true);
@@ -226,6 +332,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		}
 	}
 	
+	//saveAs local images
 	private void saveAs() throws IOException{
 		FileDialog saveAsdialog = new FileDialog(frame, "save image", FileDialog.SAVE);
 		saveAsdialog.setVisible(true);
@@ -235,15 +342,15 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 			ImageIO.write(canvasUI.getCanvas(), "png", new File(picPath + picName));
 		}
 	}
-	
+
+	//save to local
 	private void save()throws IOException{
 		if(picName == null) {
-			JOptionPane.showMessageDialog(null, "Plase SaveAs first");
+			saveAs() ;
 		}else {
 			ImageIO.write(canvasUI.getCanvas(), "png", new File(picPath + picName));
 		}
 	}
-	
 
 	
 	// verify the client name are unick
@@ -267,16 +374,8 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		}
 		client.setName(client_name);
 	}
-	
 
-	//init the canvas board 
-	@Override
-	public void drawBoard(CanvasServerInterface server) throws RemoteException{
-		frame = new JFrame(clientName + "'s WhiteBoard");
-		Container content = frame.getContentPane();
-		
-		canvasUI = new Canvas(clientName, isManager , server);
-		
+	private void setColorButtons(){
 		//set the color button
 		blackBtn = new JButton();
 		blackBtn.setBackground(Color.black);
@@ -290,6 +389,12 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		blueBtn.setOpaque(true);
 		blueBtn.addActionListener(actionListener);
 		
+		yellowBtn = new JButton();
+		yellowBtn.setBackground(Color.yellow);
+		yellowBtn.setBorderPainted(false);
+		yellowBtn.setOpaque(true);
+		yellowBtn.addActionListener(actionListener);
+		
 		redBtn = new JButton();
 		redBtn.setBackground(Color.red);
 		redBtn.setBorderPainted(false);
@@ -302,87 +407,159 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		greenBtn.setOpaque(true);
 		greenBtn.addActionListener(actionListener);
 		
+		pinkBtn = new JButton();
+		pinkBtn.setBackground(new Color(255,153,204)); // Pink
+		pinkBtn.setBorderPainted(false);
+		pinkBtn.setOpaque(true);
+		pinkBtn.addActionListener(actionListener);
 		
-		LineBorder border = new LineBorder(Color.black,2);
-
-		//free draw
+		purpleBtn = new JButton();
+		purpleBtn.setBackground(new Color(102,0,204)); // Purple
+		purpleBtn.setBorderPainted(false);
+		purpleBtn.setOpaque(true);
+		purpleBtn.addActionListener(actionListener);
+		
+		orangeBtn = new JButton();
+		orangeBtn.setBackground(Color.orange);
+		orangeBtn.setBorderPainted(false);
+		orangeBtn.setOpaque(true);
+		orangeBtn.addActionListener(actionListener);
+		
+		grayBtn = new JButton();
+		grayBtn.setBackground(Color.gray);
+		grayBtn.setBorderPainted(false);
+		grayBtn.setOpaque(true);
+		grayBtn.addActionListener(actionListener);
+		
+		limeBtn = new JButton();
+		limeBtn.setBackground(new Color(102,102,0)); // Lime
+		limeBtn.setBorderPainted(false);
+		limeBtn.setOpaque(true);
+		limeBtn.addActionListener(actionListener);
+		
+		magentaBtn = new JButton();
+		magentaBtn.setBackground(Color.magenta);
+		magentaBtn.setBorderPainted(false);
+		magentaBtn.setOpaque(true);
+		magentaBtn.addActionListener(actionListener);
+		
+		aoiBtn = new JButton();
+		aoiBtn.setBackground(new Color(0,102,102)); // AOI
+		aoiBtn.setBorderPainted(false);
+		aoiBtn.setOpaque(true);
+		aoiBtn.addActionListener(actionListener);
+		
+		skyBtn = new JButton();
+		skyBtn.setBackground(new Color(0,128,255)); // Sky
+		skyBtn.setBorderPainted(false);
+		skyBtn.setOpaque(true);
+		skyBtn.addActionListener(actionListener);
+		
+		cyanBtn = new JButton();
+		cyanBtn.setBackground(Color.cyan);
+		cyanBtn.setBorderPainted(false);
+		cyanBtn.setOpaque(true);
+		cyanBtn.addActionListener(actionListener);
+		
+		lightGrayBtn = new JButton();
+		lightGrayBtn.setBackground(Color.LIGHT_GRAY);
+		lightGrayBtn.setBorderPainted(false);
+		lightGrayBtn.setOpaque(true);
+		lightGrayBtn.addActionListener(actionListener);
+	}
+	
+	private void settingIcons() {
+		// Set line border for buttons
+		LineBorder border = new LineBorder(Color.black, 2);
+	
+		// Create buttons
+		createDrawButton(border);
+		border = new LineBorder(new Color(238,238,238),2);
+		createLineButton(border);
+		createRectButton(border);
+		createCircleButton(border);
+		createOvalButton(border);
+		createTextButton(border);
+		createEraserButton(border);
+	}
+	
+	private void createDrawButton(LineBorder border) {
 		Icon icon = new ImageIcon(getClass().getResource("/icon/pencil.png"));
-
+		JButton button = createButton(icon, "free draw", border);
+		drawBtn = button;
+	}
+	
+	private void createLineButton(LineBorder border) {
+		Icon icon = new ImageIcon(getClass().getResource("/icon/nodes.png"));
+		JButton button = createButton(icon, "Draw line", border);
+		lineBtn = button;
+	}
+	
+	private void createRectButton(LineBorder border) {
+		Icon icon = new ImageIcon(getClass().getResource("/icon/rectangular-shape-outline.png"));
+		JButton button = createButton(icon, "Draw rectangle", border);
+		rectBtn = button;
+	}
+	
+	private void createCircleButton(LineBorder border) {
+		Icon icon = new ImageIcon(getClass().getResource("/icon/oval.png"));
+		JButton button = createButton(icon, "Draw circle", border);
+		circleBtn = button;
+	}
+	
+	private void createOvalButton(LineBorder border) {
+		Icon icon = new ImageIcon(getClass().getResource("/icon/aoval.png"));
+		JButton button = createButton(icon, "Draw oval", border);
+		ovalBtn = button;
+	}
+	
+	private void createTextButton(LineBorder border) {
+		Icon icon = new ImageIcon(getClass().getResource("/icon/text.png"));
+		JButton button = createButton(icon, "Draw text", border);
+		textBtn = button;
+	}
+	
+	private void createEraserButton(LineBorder border) {
+		Icon icon = new ImageIcon(getClass().getResource("/icon/eraser.png"));
+		JButton button = createButton(icon, "Eraser", border);
+		eraserBtn = button;
+	}
+	
+	private JButton createButton(Icon icon, String toolTipText, LineBorder border) {
 		// Get the image from the original icon
 		Image originalImage = ((ImageIcon) icon).getImage();
-
+	
 		// Scale the image to the desired dimensions
-		Image scaledImage = originalImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-
+		Image scaledImage = originalImage.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+	
 		// Create a new ImageIcon with the scaled image
 		Icon scaledIcon = new ImageIcon(scaledImage);
-
+	
 		// Create the button with the scaled icon
-		drawBtn = new JButton(scaledIcon);
-		drawBtn.setToolTipText("free draw");
-		drawBtn.setBorder(border);
-		drawBtn.addActionListener(actionListener);
-		
-		//draw line
-		border = new LineBorder(new Color(238,238,238),2);
-		icon = new ImageIcon(getClass().getResource("/icon/nodes.png"));
-		originalImage = ((ImageIcon) icon).getImage();
+		JButton button = new JButton(scaledIcon);
+		button.setToolTipText(toolTipText);
+		button.setBorder(border);
+		button.addActionListener(actionListener);
+	
+		// Add the button to the list
+		btnList.add(button);
+	
+		return button;
+	}
+	
 
-		// Scale the image to the desired dimensions
-		scaledImage = originalImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+	//init the canvas board 
+	@Override
+	public void drawBoard(CanvasServerInterface server) throws RemoteException{
+		frame = new JFrame(clientName + "'s WhiteBoard");
+		Container content = frame.getContentPane();
+		
+		canvasUI = new Canvas(clientName, isManager , server);
+		
+		setColorButtons();
+		settingIcons();
+		
 
-		// Create a new ImageIcon with the scaled image
-		scaledIcon = new ImageIcon(scaledImage);
-
-		lineBtn = new JButton(scaledIcon);
-		lineBtn.setToolTipText("Draw line");
-		lineBtn.setBorder(border);
-		lineBtn.addActionListener(actionListener);
-		
-		// draw rectange
-		icon = new ImageIcon("/icon/rectangular-shape-outline.png");
-		rectBtn = new JButton(icon);
-		rectBtn.setToolTipText("Draw rectangle");
-		rectBtn.setBorder(border);
-		rectBtn.addActionListener(actionListener);
-		
-		// draw circle
-		icon = new ImageIcon("/icon/oval.png");
-		circleBtn = new JButton(icon);
-		circleBtn.setToolTipText("Draw circle");
-		circleBtn.setBorder(border);
-		circleBtn.addActionListener(actionListener);
-		
-		//draw oval
-		icon = new ImageIcon("/icon/aoval.png");
-		ovalBtn = new JButton(icon);
-		ovalBtn.setToolTipText("Draw oval");
-		ovalBtn.setBorder(border);
-		ovalBtn.addActionListener(actionListener);
-		
-		//set text
-		icon = new ImageIcon("/icon/text.png");
-		textBtn = new JButton(icon);
-		textBtn.setToolTipText("Draw text");
-		textBtn.setBorder(border);
-		textBtn.addActionListener(actionListener);
-		
-		//set eraser
-		icon = new ImageIcon("/icon/eraser.png");
-		eraserBtn = new JButton(icon);
-		eraserBtn.setToolTipText("eraser");
-		eraserBtn.setBorder(border);
-		eraserBtn.addActionListener(actionListener);
-		
-		
-		btnList.add(drawBtn);
-		btnList.add(lineBtn);
-		btnList.add(rectBtn);
-		btnList.add(circleBtn);
-		btnList.add(ovalBtn);
-		btnList.add(textBtn);
-		btnList.add(eraserBtn);
-		
 		
 		clearBtn = new JButton("New Board");
 		clearBtn.setToolTipText("Create a new board");
