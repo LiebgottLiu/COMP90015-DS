@@ -1,12 +1,9 @@
 package server;
 
-import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import javax.swing.JOptionPane;
 import remote.CanvasServerInterface;
-import server.util;
 import static client.Util.popupDialog;
 
 public class Server {
@@ -15,29 +12,23 @@ public class Server {
 	
 	public static void main(String[] args) {
 //		parseArguments(args);
+
+		//serverPort = util.parseArguments(args);
+		//System.out.println(serverPort);
 		
+
+		// try to set server ready
 		try {
-			
 			CanvasServerInterface server = new CanvasServer();
-			
 			Registry registry = LocateRegistry.createRegistry(8080);
 			registry.bind("WhiteboardServer", server);
-			JOptionPane.showMessageDialog(null, "WhiteBoard server is ready....");
+			popupDialog("WhiteBoard server is ready....");
 		}catch(Exception e) {
-			System.err.println("Port are already in use");
-			System.exit(0);
+			util.exitMessage("Port are already in use");
 		}
 	}
 
-	private static void parseArguments(String[] args) {
-		if(args.length < 2) {
-			popupDialog("Not enough argments! Should be <server address> <server port");
-			System.exit(0);
-		}
-		
-		serverPort = util.parsePort(args[1]);
-		
-	}
+
 	
 	
 

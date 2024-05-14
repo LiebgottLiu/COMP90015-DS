@@ -8,10 +8,12 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import client.MessageWrapper;
 import remote.CanvasClientInterface;
 import remote.CanvasMessageInterface;
 import remote.CanvasServerInterface;
+
+import server.util;
+import client.*;
 
 public class CanvasServer extends UnicastRemoteObject implements CanvasServerInterface, Serializable {
 
@@ -21,21 +23,23 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 		this.clientManager = new ClientManager(this);
 	}
 
+
+	// register client to clientManager list 
 	@Override
 	public void register(CanvasClientInterface client) throws RemoteException{
+		//if the user is the first join, set it as manager
 		if(this.clientManager.isEmpty()) {
 			client.assignManager();
 		}
 		
 		// ask manager for permission to join
 		boolean permission = true;
-		
 		for(CanvasClientInterface c: this.clientManager) {
 			if(c.getManager()) {
 				try {
 					permission = c.askPermission(client.getName());
 				}catch(Exception e){
-					System.err.println("there is an error");
+					util.errorMessage("there is an error");	
 				}
 			}
 		}
@@ -45,14 +49,14 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 			try {
 				client.setPermission(permission);
 			}catch(Exception e) {
-				System.err.println("there is an error");
+				util.errorMessage("there is an error");
 			}
 		}
 		
 		
 		// add * before manager name
 		if(client.getManager()) {
-			client.setName("*" + client.getName());
+			updateManagerName(client);
 		}
 		
 		//add client to client list 
@@ -62,9 +66,16 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 		for(CanvasClientInterface c: this.clientManager) {
 			c.updateUserList(this.clientManager.getClientList());
 		}
+		util.upateAllUser(this.clientManager);
 		
 	}
 
+	// update manage name with * symbel
+	private void updateManagerName(CanvasClientInterface client) throws RemoteException{
+		client.setName("*" + client.getName());
+	}
+
+	// remove client from client list
 	@Override
 	public void deleteClient(String name) throws RemoteException {
 		System.out.println("Remove " + name);
@@ -75,17 +86,15 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 				try {
 					c.closeUI();
 				}catch(RemoteException e) {
-					System.err.println("there is an remote error");
+					util.errorMessage("there is an remote error");
 				}catch(IOException e2) {
-					System.err.println("there is an IO error");
+					util.errorMessage("there is an IO error");
 				}
 				
 			}
 		}
-		
-		for(CanvasClientInterface c: this.clientManager) {
-			c.updateUserList(this.clientManager.getClientList());
-		}
+
+		util.upateAllUser(clientManager);
 		
 	}
 
@@ -98,6 +107,7 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 		
 	}
 	
+	// ask all user to refresh they canvs
 	@Override
 	public void refreshCanvas() throws RemoteException {
 		for(CanvasClientInterface c: this.clientManager) {
@@ -106,6 +116,7 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 		
 	}
 
+	// send images throuth connection
 	@Override
 	public byte[] sendImage() throws IOException, RemoteException {
 		byte[] currentImage = null;
@@ -119,7 +130,7 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 	}
 
 
-
+	// read a loacl image and sent it out to all users
 	@Override
 	public void sedOpenedImage(byte[] byteArray) throws IOException, RemoteException {
 		for(CanvasClientInterface c: this.clientManager) {
@@ -130,19 +141,22 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 		
 	}
 
+	// adding user input chat
 	@Override
 	public void addChat(String string) throws RemoteException{
 		for (CanvasClientInterface c: this.clientManager) {
 			try {
 				c.addChat(string);
 			}catch(Exception e) {
-				System.err.println("Server is down,");
-				JOptionPane.showMessageDialog(null, "WhiteBoard server is down");
+				util.errorMessage("Server is down,");
+				Util.popupDialog("WhiteBoard server is down");
+				
 			}
 		}
 		
 	}
 
+	//remove all client when manager is quit the canvas
 	@Override
 	public void removeAll() throws IOException, RemoteException {
 		System.out.println("The manager has quit");
@@ -153,6 +167,8 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 		
 	}
 
+
+	// remove one select user
 	@Override
 	public void removeMe(String clientName)  throws RemoteException{
 		for (CanvasClientInterface c: this.clientManager) {
@@ -162,15 +178,13 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 			}
 		}
 		//update user list for eveyone 
-		for(CanvasClientInterface c: this.clientManager) {
-			c.updateUserList(this.clientManager.getClientList());
-		}
+		util.upateAllUser(clientManager);
 		
 	}
 
+	// getter function for client list
 	@Override
 	public Set<CanvasClientInterface> getClientList() throws RemoteException {
-		
 		return this.clientManager.getClientList();
 	}
 

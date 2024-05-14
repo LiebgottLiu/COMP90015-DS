@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import remote.CanvasClientInterface;
 
+
+// control the user list
 public class ClientManager implements Iterable<CanvasClientInterface> {
 
 	private Set<CanvasClientInterface> clientList;
@@ -19,24 +21,29 @@ public class ClientManager implements Iterable<CanvasClientInterface> {
 		
 	}
 	
+	// add user to client list
 	public void addClient(CanvasClientInterface client) throws RemoteException {
+		//set a uid for each user
 		String uid = String.format("%s (%d)", client.getName(), UserCounter);
-		
 		if(managerUID == null) {
 			managerUID = uid;
 		}
 		UserCounter++;
+
 		this.clientList.add(client);
 	}
 	
+	// delete user from client list
 	public void deleteClient(CanvasClientInterface client) {
 		this.clientList.remove(client);
 	}
-	
+
+	// get the user list
 	public Set<CanvasClientInterface> getClientList(){
 		return this.clientList;
 	}
 	
+	// check if the user list is empty
 	public boolean isEmpty() {
 		return this.clientList.size() == 0; 
 	}
@@ -44,6 +51,10 @@ public class ClientManager implements Iterable<CanvasClientInterface> {
 	@Override
 	public Iterator<CanvasClientInterface> iterator() { 
 		return clientList.iterator();
+	}
+
+	public String getManagerUID() {
+	    return managerUID;
 	}
 
 }
