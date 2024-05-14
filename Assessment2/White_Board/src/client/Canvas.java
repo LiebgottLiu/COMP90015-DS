@@ -29,6 +29,8 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import remote.CanvasServerInterface;
+import client.Util;
+
 
 public class Canvas extends JComponent {
 
@@ -59,23 +61,26 @@ public class Canvas extends JComponent {
 		setDoubleBuffered(false);
 		
 		// keep listen the mouse actions 
+		// for mouse pressed
 		//if click store the start location and send to server
 		addMouseListener(new MouseAdapter(){
 			public void mousePressed(MouseEvent e) {
 				startPt = e.getPoint();
 				saveCanvas();
 				try {
-					MessageWrapper message = new MessageWrapper("start",clientName,
+					sendMessage("start",clientName,
 							mode,color,startPt,text);
-					server.broadCastCancas(message);
 				}catch(Exception e1) {
-					JOptionPane.showMessageDialog(null, "Canvas server is down...");
+					
+					Util.popupDialog("Canvas server is down...");
 				}
 				
 			}
 		});
 		
-		//Listen the canvas actions. draw the shape on local client then send to server
+		//Listen the canvas actions. 
+		// for mouse dragged actions 
+		//draw the shape on local client then send to server
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
 				endPt = e.getPoint();
@@ -135,6 +140,7 @@ public class Canvas extends JComponent {
 			}
 		});
 		
+
 		// draw the shap when the mouse is release
 		addMouseListener(new MouseAdapter() {
 			
@@ -189,7 +195,9 @@ public class Canvas extends JComponent {
 		
 	}
 	
-
+	private void drawing(String state){
+		
+	}
 
 	//painting the shape on the canvas
 	protected void paintComponent(Graphics g) {

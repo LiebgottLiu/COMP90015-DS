@@ -17,8 +17,6 @@ public class MessageWrapper extends UnicastRemoteObject implements CanvasMessage
 	private Color color;
 	private Point point;
 	private String text;
-
-	
 	
 	protected MessageWrapper(String state, String name, String mode, Color color, Point pt, String text) throws RemoteException{
 		//constructe the messages.
@@ -36,26 +34,31 @@ public class MessageWrapper extends UnicastRemoteObject implements CanvasMessage
 		return this.drawState;
 	}
 
+	//get client name 
 	@Override
 	public String getName() throws RemoteException {
 		return this.clientName;
 	}
 
+	// get client current drawing mode
 	@Override
 	public String getmode() throws RemoteException {
 		return this.mode;
 	}
 
+	// get the text message
 	@Override
 	public String gettext() throws RemoteException {
 		return this.text;
 	}
 
+	//get the location for the mouse 
 	@Override
 	public Point getpoint() throws RemoteException {
 		return this.point;
 	}
 
+	// get the current select color 
 	@Override
 	public Color getcolor() throws RemoteException {
 		return this.color;

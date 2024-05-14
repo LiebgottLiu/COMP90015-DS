@@ -33,6 +33,11 @@ public class Util {
         );
     }
     
+	public void sendMessage(string state, String clientName,string mode, Color color, Point startPt,String text){
+		MessageWrapper message = new MessageWrapper(state,clientName,
+							mode,color,startPt,text);
+					server.broadCastCancas(message);
+	}
 	 
 	 
 }
