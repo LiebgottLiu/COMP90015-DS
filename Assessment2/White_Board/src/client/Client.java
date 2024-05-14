@@ -246,7 +246,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 
 	//new board logic
 	private void clearLog(){
-	    int choice = JOptionPane.showConfirmDialog(frame, "", 
+	    int choice = JOptionPane.showConfirmDialog(frame, "Do you want to creat a new page?", 
 		"New Page Confirmation", JOptionPane.YES_NO_OPTION);
 		if (choice == JOptionPane.YES_OPTION) {
 			// User clicked "Yes"
@@ -546,7 +546,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	
 		return button;
 	}
-	
+
 
 	//init the canvas board 
 	@Override
@@ -560,34 +560,15 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		settingIcons();
 		
 
+		managerBUtton();
 		
-		clearBtn = new JButton("New Board");
-		clearBtn.setToolTipText("Create a new board");
-		clearBtn.addActionListener(actionListener);
-		
-		saveBtn = new JButton("Save Image");
-		saveBtn.setToolTipText("Save as iamge file");
-		saveBtn.addActionListener(actionListener);
-		
-		saveAsBtn = new JButton("Save as");
-		saveAsBtn.setToolTipText("Save iamge as file");
-		saveAsBtn.addActionListener(actionListener);
-		
-		openBtn = new JButton("Open Local Image");
-		openBtn.setToolTipText("Open an iamge file");
-		openBtn.addActionListener(actionListener);
-		
-		// tell color
-		tellColor = new JTextArea("The current color is:");
-		tellColor.setBackground(new Color(238,238,238));
-		displayColor = new JTextArea("");
-		displayColor.setBackground(Color.black);
 		
 		if (isManager == false) {
 			clearBtn.setVisible(false);
 			saveBtn.setVisible(false);
 			saveAsBtn.setVisible(false);
 			openBtn.setVisible(false);
+			closeButton.setVisible(false);
 		}
 		
 		// showing the user list 
@@ -600,34 +581,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		
 		if(isManager) {
 			// remove user
-			list.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent evt) {
-					@SuppressWarnings("unchecked")
-					JList<String> list =(JList<String>)evt.getSource();
-					if(evt.getClickCount() == 2) {
-						int index = list.locationToIndex(evt.getPoint());
-						String selectedName = list.getModel().getElementAt(index);
-						try {
-							if(!getName().equals(selectedName)) {
-								int dialogResult = JOptionPane.showConfirmDialog(frame, "Do you want to remove " + selectedName,
-										"Warning",JOptionPane.YES_NO_OPTION);
-								if(dialogResult == JOptionPane.YES_OPTION) {
-									try {
-										server.deleteClient(selectedName);
-										updateUserList(server.getClientList());
-									}catch(IOException e) {
-										System.err.println("There is an io error");
-									}
-								}
-							}
-						}catch(HeadlessException e) {
-							System.err.println("There is an Headless error");
-						}catch(RemoteException e) {
-							System.err.println("There is an IO error");
-						}
-					}
-				}
-			});
+			kickoutUser(list);
 		}
 		
 		//chat box 
@@ -635,24 +589,8 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		msgArea = new JScrollPane(chat);
 		msgArea.setMinimumSize(new Dimension(100,100));
 		JTextField msgText = new JTextField();
-		JButton sendBtn = new JButton("Send");
-		sendBtn.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent evt) {
-				if(!msgText.getText().equals("")) {
-					try {
-						server.addChat(clientName + ": "+ msgText.getText());
-						
-						SwingUtilities.invokeLater(() -> {
-							JScrollBar vertical = msgArea.getVerticalScrollBar();
-							vertical.setValue(vertical.getMaximum());
-					});
-					}catch(RemoteException e1) {
-						JOptionPane.showMessageDialog(null, "WhiteBoard server lost connection, Please Sava and Exit.");
-					}
-					msgText.setText("");
-				}
-			}
-		});
+		JButton sendBtn = setChatbox(msgText);
+		
 		
 		
 		//clientUI layout
@@ -690,10 +628,24 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 			        .addGroup(layout.createSequentialGroup()
 			            .addComponent(greenBtn)
 			        )
+					.addGroup(layout.createSequentialGroup()
+			            .addComponent(yellowBtn)
+			        )
+					.addGroup(layout.createSequentialGroup()
+			            .addComponent(orangeBtn)
+			        )
+					.addGroup(layout.createSequentialGroup()
+			            .addComponent(limeBtn)
+			        )
+					.addGroup(layout.createSequentialGroup()
+			            .addComponent(lightGrayBtn)
+			        )
 			    )
 			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 			    		.addComponent(clearBtn)
 			    		.addComponent(openBtn)
+						.addComponent(closeButton)
+						
 			    		.addComponent(saveBtn)
 			    		.addComponent(saveAsBtn)
 			    		.addComponent(currUsers)
@@ -717,6 +669,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 						.addGroup(layout.createSequentialGroup()
 								.addComponent(clearBtn)
 					    		.addComponent(openBtn)
+								.addComponent(closeButton)
 					    		.addComponent(saveBtn)
 					    		.addComponent(saveAsBtn)
 					    		.addComponent(currUsers)
@@ -745,52 +698,252 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 								.addComponent(greenBtn)
 								)
 						)
+				.addGroup(layout.createSequentialGroup()
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(orangeBtn)
+							)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(yellowBtn)
+							)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(limeBtn)
+							)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(lightGrayBtn)
+							)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(grayBtn)
+							)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(pinkBtn)
+							)
+						)
 				);
-			layout.linkSize(SwingConstants.HORIZONTAL, clearBtn,saveBtn,saveAsBtn,openBtn);
+			layout.linkSize(SwingConstants.HORIZONTAL, clearBtn,saveBtn,saveAsBtn,openBtn,closeButton);
 			
+			// // 左侧按钮水平排列的分组
+			// GroupLayout.SequentialGroup leftButtonGroup = layout.createSequentialGroup()
+			// .addComponent(drawBtn)
+			// .addComponent(lineBtn)
+			// .addComponent(rectBtn)
+			// .addComponent(circleBtn)
+			// .addComponent(ovalBtn)
+			// .addComponent(textBtn)
+			// .addComponent(eraserBtn);
+
+			// // 颜色按钮垂直排列的分组
+			// GroupLayout.SequentialGroup colorButtonGroup = layout.createSequentialGroup()
+			// .addComponent(blackBtn)
+			// .addComponent(blueBtn)
+			// .addComponent(redBtn)
+			// .addComponent(greenBtn);
+
+			// // 右上角的按钮组合
+			// GroupLayout.ParallelGroup topRightGroup = layout.createParallelGroup()
+			// .addGroup(leftButtonGroup) // 添加左侧按钮
+			// .addGroup(layout.createSequentialGroup()
+			// 	.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) // 添加间距以使按钮布局更合理
+			// 	.addGroup(colorButtonGroup) // 添加颜色按钮
+			// );
+
+			// // 其他按钮和元素的垂直排列的分组
+			// GroupLayout.ParallelGroup bottomGroup = layout.createParallelGroup()
+			// .addComponent(clearBtn)
+			// .addComponent(openBtn)
+			// .addComponent(closeButton)
+			// .addComponent(saveBtn)
+			// .addComponent(saveAsBtn)
+			// .addComponent(currUsers)
+			// .addComponent(tellColor)
+			// .addComponent(displayColor);
+
+			// // 设置水平分组
+			// layout.setHorizontalGroup(layout.createSequentialGroup()
+			// .addGroup(topRightGroup) // 添加右上角的按钮组合
+			// .addGroup(layout.createParallelGroup() // 添加画布和其他按钮
+			// 	.addComponent(canvasUI)
+			// 	.addComponent(msgArea)
+			// 	.addGroup(bottomGroup)
+			// )
+			// );
+			// // 其他按钮和元素的垂直排列的分组
+			// GroupLayout.ParallelGroup bottomGroups = layout.createParallelGroup()
+			// .addComponent(clearBtn)
+			// .addComponent(openBtn)
+			// .addComponent(closeButton) // 添加 closeButton 按钮
+			// .addComponent(saveBtn)
+			// .addComponent(saveAsBtn)
+			// .addComponent(currUsers)
+			// .addComponent(tellColor)
+			// .addComponent(displayColor);
+
+			// // 设置水平分组
+			// layout.setHorizontalGroup(layout.createSequentialGroup()
+			// .addGroup(topRightGroup) // 添加右上角的按钮组合
+			// .addGroup(layout.createParallelGroup() // 添加画布和其他按钮
+			// 	.addComponent(canvasUI)
+			// 	.addComponent(msgArea)
+			// 	.addGroup(bottomGroup) // 添加其他按钮
+			// )
+			// );
+
+
+			// // 设置垂直分组
+			// layout.setVerticalGroup(layout.createSequentialGroup()
+			// .addGroup(layout.createParallelGroup() // 上方按钮组合
+			// 	.addGroup(leftButtonGroup) // 添加左侧按钮
+			// 	.addGroup(colorButtonGroup) // 添加颜色按钮
+			// )
+			// .addGroup(layout.createParallelGroup() // 中间的画布和其他按钮
+			// 	.addGroup(layout.createSequentialGroup()
+			// 		.addComponent(canvasUI)
+			// 		.addComponent(msgArea)
+			// 	)
+			// 	.addGroup(bottomGroup) // 添加其他按钮
+			// )
+			// );
+
+
+
+
 			frame.setMinimumSize(new Dimension(820, 600));
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			frame.setVisible(true);
 			
-			//if the manager close the windows
-			frame.addWindowListener(new java.awt.event.WindowAdapter() {
-				public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-					if(isManager) {
-						if(JOptionPane.showConfirmDialog(frame, 
-								"You are the manager? Are you sure you want to close the app?"
-								,"Close App?", 
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-							try {
-								server.removeAll();
-							}catch(IOException e) {
-								System.err.println("There are an IO error");
-							}finally {
-								System.exit(0);
-							}
-						}
-					} else {
-						if (JOptionPane.showConfirmDialog(frame,
-								"Are you shure you want to quit?", "Close Paint Board?", 
-								JOptionPane.YES_NO_OPTION, 
-								JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-							try {
-								server.removeMe(clientName);
-								updateUserList(server.getClientList());
-							}catch(RemoteException e) {
-								JOptionPane.showMessageDialog(null, "Canvas server is down, please save and exit.");
-							}finally {
-								System.exit(0);
-							}
-								
+			managerCloseUI();		
+	} 
+
+	//if the manager close the windows
+	private void managerCloseUI(){
+		
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				if(isManager) {
+					if(JOptionPane.showConfirmDialog(frame, 
+							"You are the manager? Are you sure you want to close the app?"
+							,"Close App?", 
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+						try {
+							server.removeAll();
+						}catch(IOException e) {
+							util.errorMessage(ioMEssage);
+						}finally {
+							System.exit(0);
 						}
 					}
+				} else {
+					if (JOptionPane.showConfirmDialog(frame,
+							"Are you shure you want to quit?", "Close Paint Board?", 
+							JOptionPane.YES_NO_OPTION, 
+							JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+						try {
+							server.removeMe(clientName);
+							updateUserList(server.getClientList());
+						}catch(RemoteException e) {
+							Util.popupDialog("Canvas server is down, please save and exit.");
+						}finally {
+							System.exit(0);
+						}
+							
+					}
 				}
-			});		
-	} 
+			}
+		});		
+	}
+
+	// if manager choose to kit some user
+	private void kickoutUser(JList<String> list){
+		list.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				@SuppressWarnings("unchecked")
+				JList<String> list =(JList<String>)evt.getSource();
+				if(evt.getClickCount() == 2) {
+					int index = list.locationToIndex(evt.getPoint());
+					String selectedName = list.getModel().getElementAt(index);
+					try {
+						if(!getName().equals(selectedName)) {
+							int dialogResult = JOptionPane.showConfirmDialog(frame, "Do you want to remove " + selectedName,
+									"Warning",JOptionPane.YES_NO_OPTION);
+							if(dialogResult == JOptionPane.YES_OPTION) {
+								try {
+									server.deleteClient(selectedName);
+									updateUserList(server.getClientList());
+								}catch(IOException e) {
+									util.errorMessage(ioMEssage);
+								}
+							}
+						}
+					}catch(HeadlessException e) {
+						util.errorMessage(ioMEssage);
+					}catch(RemoteException e) {
+						util.errorMessage(ioMEssage);
+					}
+				}
+			}
+		});
+	}
+
+	// send message to server button
+	private JButton setChatbox(JTextField msgText){
+		JButton sendBtn = new JButton("Send");
+		sendBtn.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				if(!msgText.getText().equals("")) {
+					try {
+						server.addChat(clientName + ": "+ msgText.getText());
+						
+						SwingUtilities.invokeLater(() -> {
+							JScrollBar vertical = msgArea.getVerticalScrollBar();
+							vertical.setValue(vertical.getMaximum());
+					});
+					}catch(RemoteException e1) {
+						JOptionPane.showMessageDialog(null, "WhiteBoard server lost connection, Please Sava and Exit.");
+					}
+					msgText.setText("");
+				}
+			}
+		});
+		return sendBtn;
+	}
+
+	private void setGUILayout(){
+		
+	}
 	
+
+	// init the manager avaliable buttons such as save open
+	public void managerBUtton(){
+		clearBtn = new JButton("New Board");
+		clearBtn.setToolTipText("Create a new board");
+		clearBtn.addActionListener(actionListener);
+		
+		saveBtn = new JButton("Save Image");
+		saveBtn.setToolTipText("Save as iamge file");
+		saveBtn.addActionListener(actionListener);
+		
+		saveAsBtn = new JButton("Save as");
+		saveAsBtn.setToolTipText("Save iamge as file");
+		saveAsBtn.addActionListener(actionListener);
+		
+		openBtn = new JButton("Open Local Image");
+		openBtn.setToolTipText("Open an iamge file");
+		openBtn.addActionListener(actionListener);
+
+		closeButton = new JButton("Close Canvas");
+		closeButton.setToolTipText("Close the canvas");
+		closeButton.addActionListener(actionListener);
+		
+		// tell color
+		tellColor = new JTextArea("The current color is:");
+		tellColor.setBackground(new Color(238,238,238));
+		displayColor = new JTextArea("");
+		displayColor.setBackground(Color.black);
+	}
 	
+
+	// update for all user list 
 	public void updateUserList(Set<CanvasClientInterface> list) {
 		this.userList.removeAllElements();
 		for (CanvasClientInterface c: list) {
@@ -801,77 +954,34 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 			}
 		}
 	}
-	
-	public Shape makeLine(Shape shape, Point start, Point end) {
-		shape = new Line2D.Double(start.x,start.y,end.x,end.y);
-		return shape;
-	}
-
-	
-	// draw rectangle
-		public Shape makeRect(Shape shape, Point start, Point end) {
-			int x = Math.min(start.x, end.x);
-			int y = Math.min(start.y, end.y);
-			int width = Math.abs(start.x - end.x);
-			int height = Math.abs(start.y - end.y);
-			shape = new Rectangle2D.Double(x,y,width,height);
-			return shape;
-		}
 		
-		// draw circle
-		public Shape makeCircle(Shape shape, Point start, Point end) {
-			int x = Math.min(start.x, end.x);
-			int y = Math.min(start.y, end.y);
-			int width = Math.abs(start.x - end.x);
-			int height = Math.abs(start.y - end.y);
-			shape = new Ellipse2D.Double(x,y,Math.max(width, height), Math.max(width, height));
-			return shape;
-		}
-		
-		// draw Oval
-		public Shape makeOval(Shape shape, Point start, Point end) {
-			int x = Math.min(start.x, end.x);
-			int y = Math.min(start.y, end.y);
-			int width = Math.abs(start.x - end.x);
-			int height = Math.abs(start.y - end.y);
-			shape = new Ellipse2D.Double(x,y,width,height);
-			return shape;
-		}
-		
-		// draw text
-		public Shape makeText(Shape shape, Point start) {
-			int x = start.x -5;
-			int y = start.y -20;
-			int width = 130;
-			int height = 25;
-			shape = new RoundRectangle2D.Double(x,y,width,height, 15,15);
-			return shape;
-			
-		}
-		
-		
+	// get names of all users
 	@Override
 	public String getName() throws RemoteException {
 		return this.clientName;
 	}
 
+	// set the canvas name 
 	@Override
 	public void setName(String client_name) throws RemoteException {
 		this.clientName = client_name;
 		return;
 	}
 
+	//assign the client as manager 
 	@Override
 	public void assignManager() {
 		this.isManager = true;
 		
 	}
 
+	//get the manager states
 	@Override
 	public boolean getManager() {
 		return this.isManager;
 	}
 
+	//new user ask join permission
 	@Override
 	public boolean askPermission(String name)  {
 		if (JOptionPane.showConfirmDialog(frame, 
@@ -898,6 +1008,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	}
 
 
+	//send update to all users 
 	@Override
 	public void syncCanvas(CanvasMessageInterface message)  throws RemoteException{
 		if(message.getName().compareTo(clientName) == 0) {
@@ -921,7 +1032,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 			if(message.getmode().equals("eraser")) {
 				canvasUI.getGraohic().setStroke(new BasicStroke(15.0f));
 			}
-			shape = makeLine(shape, startPt, message.getpoint());
+			shape = Util.makeLine(shape, startPt, message.getpoint());
 			startPoints.put(message.getName(), message.getpoint());
 			canvasUI.getGraohic().draw(shape);
 			canvasUI.repaint();
@@ -932,15 +1043,15 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		if( message.getState().equals("end")) {
 			canvasUI.getGraohic().setStroke(new BasicStroke(1.0f));
 			if(message.getmode().equals("draw") || message.getmode().equals("line")) {
-				shape = makeLine(shape, startPt, message.getpoint());
+				shape = Util.makeLine(shape, startPt, message.getpoint());
 			}else if(message.getmode().equals("eraser")) {
 				canvasUI.getGraohic().setStroke(new BasicStroke(15.0f));
 			}else if(message.getmode().equals("rect")) {
-				shape = makeRect(shape,startPt,message.getpoint());
+				shape = Util.makeRect(shape,startPt,message.getpoint());
 			}else if(message.getmode().equals("circle")) {
-				shape = makeCircle(shape,startPt,message.getpoint());
+				shape = Util.makeCircle(shape,startPt,message.getpoint());
 			}else if(message.getmode().equals("oval")) {
-				shape = makeOval(shape,startPt,message.getpoint());
+				shape = Util.makeOval(shape,startPt,message.getpoint());
 			}else if(message.getmode().equals("text")) {
 				canvasUI.getGraohic().setFont(new Font("TimeRoman", Font.PLAIN,16));
 				canvasUI.getGraohic().drawString(message.gettext(), message.getpoint().x, message.getpoint().y);
@@ -964,6 +1075,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		
 	}
 
+	//get the canvas from the server
 	@Override
 	public void refreshCanvas() {
 		if(this.isManager == false) {
@@ -972,6 +1084,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		
 	}
 
+	//close the UI for user
 	@Override
 	public void closeUI() throws IOException {
 		if(!this.havePermission) {
@@ -1000,19 +1113,22 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		
 	}
 
+	//add cirremt chat to servers 
 	@Override
 	public void addChat(String text) throws RemoteException {
 		this.chatList.addElement(text);
 		
 	}
 
+	//sending the image to server 
 	@Override
 	public byte[] sendImage() throws IOException {
 		ByteArrayOutputStream imageArray = new ByteArrayOutputStream();
 		ImageIO.write(this.canvasUI.getCanvas(), "png", imageArray);
 		return imageArray.toByteArray();
 	}
-
+	
+	// draw current 
 	@Override
 	public void drawOpenedImage(byte[] rawImage) throws IOException {
 		BufferedImage image = ImageIO.read(new ByteArrayInputStream(rawImage));
