@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import client.MessageWrapper;
 import remote.CanvasClientInterface;
+import remote.CanvasMessageInterface;
 import remote.CanvasServerInterface;
 
 public class CanvasServer extends UnicastRemoteObject implements CanvasServerInterface, Serializable {

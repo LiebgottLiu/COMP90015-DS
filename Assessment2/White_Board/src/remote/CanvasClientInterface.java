@@ -1,6 +1,7 @@
 package remote;
 
 import java.io.IOException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Set;
 
@@ -27,13 +28,13 @@ public interface CanvasClientInterface extends Remote {
 	
 	public void refreshCanvas()throws RemoteException;
 	
-	public void closeUI()throws RemoteException;
+	public void closeUI()throws IOException;
 	
 	public byte[] sendImage()throws RemoteException, IOException;
 	
 	public void drawOpenedImage(byte[] rawImage)throws RemoteException, IOException;
 
-	public void drawBoard(CanvasServerInterface server);
+	public void drawBoard(CanvasServerInterface server)throws RemoteException;
 
 	public boolean getPermission()throws RemoteException;
 

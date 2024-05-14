@@ -151,9 +151,9 @@ public class Canvas extends JComponent {
 						shape = makeRect(shape, startPt, endPt);
 					}else if(mode.equals("circle")){
 						shape = makeCircle(shape, startPt, endPt);
-					}else if (mode.equals ("triangle")){:
+					}else if (mode.equals ("triangle")){
 						shape = makeOval(shape, startPt, endPt);
-					}else if(mode.equals("text")){:
+					}else if(mode.equals("text")){
 						text = JOptionPane.showInputDialog("Adding text here");
 						if(text == null) 
 							text = "";
@@ -457,4 +457,4 @@ public class Canvas extends JComponent {
 	
 	
 	
-}
+

@@ -267,8 +267,10 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		client.setName(client_name);
 	}
 	
+
+	//init the canvas board 
 	@Override
-	public void drawBoard(CanvasServerInterface server) {
+	public void drawBoard(CanvasServerInterface server) throws RemoteException{
 		frame = new JFrame(clientName + "'s WhiteBoard");
 		Container content = frame.getContentPane();
 		
@@ -822,7 +824,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	}
 	
 	//main functions
-	public static void main(String args[]) throws NotBoundException, MalformedURLException, NotBoundException {
+	public static void main(String args[]) throws NotBoundException, NotBoundException, IOException {
 		//set the connection informations
 		String hostName = "localhost";
 		String portNumber = "8080";
