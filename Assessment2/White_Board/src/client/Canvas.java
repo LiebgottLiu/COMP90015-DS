@@ -29,6 +29,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import remote.CanvasServerInterface;
+import server.util;
 import client.Util;
 
 
@@ -47,6 +48,9 @@ public class Canvas extends JComponent {
 	private Graphics2D graphics;
 	
 	private CanvasServerInterface server;
+
+	private Color eraserColor = Color.white;
+	private String canvasMessage = "Canvas server is down...";
 	
 	
 	public Canvas(String name, boolean isManager, CanvasServerInterface RemoteInterface) {
@@ -68,8 +72,8 @@ public class Canvas extends JComponent {
 				startPt = e.getPoint();
 				saveCanvas();
 				try {
-					sendMessage("start",clientName,
-							mode,color,startPt,text);
+					Util.sendMessage("start",clientName,
+							mode,color,startPt,text,server);
 				}catch(Exception e1) {
 					
 					Util.popupDialog("Canvas server is down...");
@@ -88,52 +92,7 @@ public class Canvas extends JComponent {
 				if(graphics != null) {
 					graphics.setPaint(color);
 					graphics.setStroke(new BasicStroke(1.0f));
-					
-					//改写。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
-					if(mode.equals("draw")) {
-						shape = makeLine(shape, startPt, endPt);
-						startPt = endPt;
-						try {
-							MessageWrapper message = new MessageWrapper("drawing", 
-									clientName, mode, color, endPt, "");
-							server.broadCastCancas(message);
-						}catch(Exception e1) {
-							JOptionPane.showMessageDialog(null, "Canvas server is down...");
-						}
-					}else if (mode.equals("eraser")) {
-						Color eraserColor = Color.white;
-						shape = makeLine(shape, startPt, endPt);
-						startPt = endPt;
-						graphics.setPaint(eraserColor);
-						graphics.setStroke(new BasicStroke(15.0f));
-						try {
-							MessageWrapper message = new MessageWrapper("drawing", 
-									clientName, mode, eraserColor, endPt, "");
-							server.broadCastCancas(message);
-						}catch(Exception e1) {
-							JOptionPane.showMessageDialog(null, "Canvas server is down...");
-						}
-					}else if(mode.equals("line")) {
-						drawPreviousCanvas();
-						shape = makeLine(shape,startPt, endPt);
-					}else if(mode.equals("rect")) {
-						drawPreviousCanvas();
-						shape = makeRect(shape,startPt, endPt);
-					}else if(mode.equals("circle")) {
-						drawPreviousCanvas();
-						shape = makeCircle(shape,startPt, endPt);
-					}else if(mode.equals("oval")) {
-						drawPreviousCanvas();
-						shape = makeOval(shape,startPt, endPt);
-					}else if(mode.equals("text")) {
-						drawPreviousCanvas();
-						graphics.setFont(new Font("TimesRoman", Font.PLAIN, 16));
-						graphics.drawString("Enter text", endPt.x, endPt.y);
-						shape = makeText(shape, startPt);
-						Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, 
-								BasicStroke.JOIN_BEVEL, 1, new float[] {3}, 0);
-						graphics.setStroke(dashed);
-					}
+					shape = drawingbuttons(mode, shape);
 					graphics.draw(shape);
 					repaint();
 				}
@@ -141,33 +100,16 @@ public class Canvas extends JComponent {
 		});
 		
 
+		//Listen the canvas actions.
 		// draw the shap when the mouse is release
+		// draw the shaoe one local client then send to server.
 		addMouseListener(new MouseAdapter() {
-			
 			public void mouseReleased(MouseEvent e) {
 				//as the location saves 
 				endPt = e.getPoint();
 				Shape shape = null;
 				if(graphics != null) {
-					if (mode.equals("line")){
-						shape = makeLine(shape, startPt, endPt);
-					}else if (mode.equals("draw")){
-						shape = makeLine(shape, startPt, endPt);
-					}else if (mode.equals("rect")){
-						shape = makeRect(shape, startPt, endPt);
-					}else if(mode.equals("circle")){
-						shape = makeCircle(shape, startPt, endPt);
-					}else if (mode.equals ("triangle")){
-						shape = makeOval(shape, startPt, endPt);
-					}else if(mode.equals("text")){
-						text = JOptionPane.showInputDialog("Adding text here");
-						if(text == null) 
-							text = "";
-						drawPreviousCanvas();
-						graphics.setFont(new Font("TimesRoman", Font.PLAIN, 22));
-						graphics.drawString(text, endPt.x, endPt.y);
-						graphics.setStroke(new BasicStroke(1.0f));
-					}
+					shape = drawingWhenrelease(mode, shape);
 					
 					if (! mode.equals("text")) {
 						try {
@@ -179,24 +121,102 @@ public class Canvas extends JComponent {
 					
 					repaint();
 					
+					// try to update users' canvas
 					try {
-						MessageWrapper message = new MessageWrapper("end", clientName, 
-								mode, color, endPt, text);
-						server.broadCastCancas(message);
+						Util.sendMessage("end", clientName, 
+						mode, color, endPt, text,server);
 					}catch(RemoteException e2){
-						JOptionPane.showMessageDialog(null, "Canvas server is down...");
+						Util.popupDialog(canvasMessage);
 					}
-					
-						
 				}
 			}
 		});
 		
 		
 	}
+
+
+	//drawing the diffreent shape baed on different mode state.
+	private Shape drawingWhenrelease(String state, Shape shape){
+		switch(state){
+			case "line":
+				shape = Util.makeLine(shape, startPt, endPt);
+				break;
+			case "draw":
+				shape = Util.makeLine(shape, startPt, endPt);
+				break;
+			case "rect":
+				shape = Util.makeRect(shape, startPt, endPt);
+				break;
+			case "circle":
+				shape = Util.makeCircle(shape, startPt, endPt);
+				break;
+			case "triangle":
+				shape = Util.makeOval(shape, startPt, endPt);
+				break;
+			case "text":
+				text = Util.getText();
+				drawPreviousCanvas();
+				graphics.setFont(new Font("TimesRoman", Font.PLAIN, 22));
+				graphics.drawString(text, endPt.x, endPt.y);
+				graphics.setStroke(new BasicStroke(1.0f));
+				break;
+		}
+		return shape;
+	}
 	
-	private void drawing(String state){
-		
+	//drawing canvas when the mouse is clicked on the canvas
+	private Shape drawingbuttons(String state, Shape shape){
+		switch (state) {
+			case "draw":
+				shape = Util.makeLine(shape, startPt, endPt);
+				startPt = endPt;
+				try {
+					Util.sendMessage("drawing", 
+					clientName, mode, color, endPt, "", server);
+				} catch (Exception e) {
+					Util.popupDialog(canvasMessage);
+				}
+				break;
+			case "eraser":
+				shape = Util.makeLine(shape, startPt, endPt);
+				startPt = endPt;
+				graphics.setPaint(eraserColor);
+				graphics.setStroke(new BasicStroke(15.0f));
+				try {
+					Util.sendMessage("drawing", 
+					clientName, mode, eraserColor, endPt, "", server);
+				} catch (Exception e) {
+					Util.popupDialog(canvasMessage);
+				}
+				break;
+			case "line":
+				drawPreviousCanvas();
+				shape = Util.makeLine(shape, startPt, endPt);
+				break;
+			case "rect":
+				drawPreviousCanvas();
+				shape = Util.makeRect(shape, startPt, endPt);
+				break;
+			case "circle":
+				drawPreviousCanvas();
+				shape = Util.makeCircle(shape, startPt, endPt);
+				break;
+			case "oval":
+				drawPreviousCanvas();
+				shape = Util.makeOval(shape, startPt, endPt);
+				break;
+			case "text":
+				drawPreviousCanvas();
+				graphics.setFont(new Font("TimesRoman", Font.PLAIN, 16));
+				graphics.drawString("Enter text", endPt.x, endPt.y);
+				shape = Util.makeText(shape, startPt);
+				Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, 
+						BasicStroke.JOIN_BEVEL, 1, new float[] {3}, 0);
+				graphics.setStroke(dashed);
+				break;
+		}
+		return shape;
 	}
 
 	//painting the shape on the canvas
@@ -219,7 +239,7 @@ public class Canvas extends JComponent {
 					graphics.setPaint(color);
 					
 				}catch(IOException e) {
-					System.err.println("Fail receiving imag!");
+					util.errorMessage("Fail receiving imag!");
 				}
 			}
 		}
@@ -233,14 +253,17 @@ public class Canvas extends JComponent {
 		return color;
 	}
 	
+	//get current mode
 	public String getCurrentMode() {
 		return mode;
 	}
 	
+	//get graphics
 	public Graphics2D getGraohic() {
 		return graphics;
 	}
 	
+	//get canvas
 	public BufferedImage getCanvas() {
 		saveCanvas();
 		return previousCanvas;
@@ -248,7 +271,7 @@ public class Canvas extends JComponent {
 	
 	// reset the canvas page
 	public void reset() {
-		graphics.setPaint(Color.white);
+		graphics.setPaint(eraserColor);
 		graphics.fillRect(0, 0, 700, 350);
 		graphics.setPaint(color);
 		repaint();
@@ -256,9 +279,6 @@ public class Canvas extends JComponent {
 	
 	//save the canvas page
 	public void saveCanvas() {
-		//22222222222222222222222222222222222222222222222222222
-		//Cannot invoke "java.awt.image.BufferedImage.getColorModel()"
-		//because "this.image" is null
 		ColorModel cm = image.getColorModel();
 		WritableRaster raster = image.copyData(null);
 		previousCanvas = new BufferedImage(cm,raster,false,null);
@@ -392,53 +412,7 @@ public class Canvas extends JComponent {
 	}
 	
 	
-	// draw different shapes
-	// draw line 
-	public Shape makeLine(Shape shape, Point start, Point end) {
-		shape = new Line2D.Double(start.x,start.y,end.x,end.y);
-		return shape;
-	}
 	
-	// draw rectangle
-	public Shape makeRect(Shape shape, Point start, Point end) {
-		int x = Math.min(start.x, end.x);
-		int y = Math.min(start.y, end.y);
-		int width = Math.abs(start.x - end.x);
-		int height = Math.abs(start.y - end.y);
-		shape = new Rectangle2D.Double(x,y,width,height);
-		return shape;
-	}
-	
-	// draw circle
-	public Shape makeCircle(Shape shape, Point start, Point end) {
-		int x = Math.min(start.x, end.x);
-		int y = Math.min(start.y, end.y);
-		int width = Math.abs(start.x - end.x);
-		int height = Math.abs(start.y - end.y);
-		shape = new Ellipse2D.Double(x,y,Math.max(width, height), Math.max(width, height));
-		return shape;
-	}
-	
-	// draw Oval
-	public Shape makeOval(Shape shape, Point start, Point end) {
-		int x = Math.min(start.x, end.x);
-		int y = Math.min(start.y, end.y);
-		int width = Math.abs(start.x - end.x);
-		int height = Math.abs(start.y - end.y);
-		shape = new Ellipse2D.Double(x,y,width,height);
-		return shape;
-	}
-	
-	// draw text
-	public Shape makeText(Shape shape, Point start) {
-		int x = start.x -5;
-		int y = start.y -20;
-		int width = 130;
-		int height = 25;
-		shape = new RoundRectangle2D.Double(x,y,width,height, 15,15);
-		return shape;
-		
-	}
 }
 
 
