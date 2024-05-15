@@ -41,6 +41,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
@@ -67,7 +68,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	private DefaultListModel<String> userList;
 	private DefaultListModel<String> chatList;
 	private JButton clearBtn, saveBtn, saveAsBtn, openBtn, closeButton;
-	private JButton blackBtn, blueBtn, yellowBtn, redBtn, greenBtn, pinkBtn, purpleBtn, orangeBtn, grayBtn, limeBtn, magentaBtn, aoiBtn, skyBtn, cyanBtn, lightGrayBtn;
+	private JButton blackBtn, blueBtn, yellowBtn, redBtn, greenBtn, pinkBtn, purpleBtn, orangeBtn, grayBtn, limeBtn, magentaBtn, aoiBtn, skyBtn, cyanBtn, lightGrayBtn,bronBtn;
 
 	private JButton drawBtn, lineBtn,rectBtn,circleBtn,ovalBtn,textBtn,eraserBtn;
 	private JScrollPane msgArea;
@@ -113,7 +114,8 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
     			e.getSource() == redBtn || e.getSource() == greenBtn || e.getSource() == pinkBtn || 
     			e.getSource() == purpleBtn || e.getSource() == orangeBtn || e.getSource() == grayBtn || 
     			e.getSource() == limeBtn || e.getSource() == magentaBtn || e.getSource() == aoiBtn || 
-    			e.getSource() == skyBtn || e.getSource() == cyanBtn || e.getSource() == lightGrayBtn) {
+    			e.getSource() == skyBtn || e.getSource() == cyanBtn || e.getSource() == lightGrayBtn ||
+				e.getSource() == bronBtn) {
     				displayColor.setBackground(canvasUI.getCurrentColor());
 				}
 		}
@@ -225,8 +227,12 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 			canvasUI.cyan();
 		} else if (event == lightGrayBtn) {
 			canvasUI.lightGray();
+		}else if (event == bronBtn) {
+			canvasUI.brown();
 		}
 	}
+
+
 
 	// select the manager function buttons
 	private void functionButtons(Object event){
@@ -448,6 +454,12 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		aoiBtn.setBorderPainted(false);
 		aoiBtn.setOpaque(true);
 		aoiBtn.addActionListener(actionListener);
+
+		bronBtn = new JButton();
+		bronBtn.setBackground(new Color(102,51,0)); // Brown
+		bronBtn.setBorderPainted(false);
+		bronBtn.setOpaque(true);
+		bronBtn.addActionListener(actionListener);
 		
 		skyBtn = new JButton();
 		skyBtn.setBackground(new Color(0,128,255)); // Sky
@@ -591,228 +603,20 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		JTextField msgText = new JTextField();
 		JButton sendBtn = setChatbox(msgText);
 		
-		
+		 setGUILayout(content,currUsers,msgArea,sendBtn,msgText);
 		
 		//clientUI layout
-		GroupLayout layout = new GroupLayout(content);
-		content.setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
 		
-		layout.setHorizontalGroup(layout.createSequentialGroup()
-			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER) // Use GroupLayout.Alignment.CENTER
-			        .addComponent(drawBtn)
-			        .addComponent(lineBtn)
-			        .addComponent(rectBtn)
-			        .addComponent(circleBtn)
-			        .addComponent(ovalBtn)
-			        .addComponent(textBtn)
-			        .addComponent(eraserBtn)
-			    )
-			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER) // Use GroupLayout.Alignment.CENTER
-			        .addComponent(canvasUI)
-			        .addComponent(msgArea)
-			        .addGroup(layout.createSequentialGroup()
-			            .addComponent(msgText)
-			            .addComponent(sendBtn)
-			        )
-			        .addGroup(layout.createSequentialGroup()
-			            .addComponent(blackBtn)
-			        )
-			        .addGroup(layout.createSequentialGroup()
-			            .addComponent(blueBtn)
-			        )
-			        .addGroup(layout.createSequentialGroup()
-			            .addComponent(redBtn)
-			        )
-			        .addGroup(layout.createSequentialGroup()
-			            .addComponent(greenBtn)
-			        )
-					.addGroup(layout.createSequentialGroup()
-			            .addComponent(yellowBtn)
-			        )
-					.addGroup(layout.createSequentialGroup()
-			            .addComponent(orangeBtn)
-			        )
-					.addGroup(layout.createSequentialGroup()
-			            .addComponent(limeBtn)
-			        )
-					.addGroup(layout.createSequentialGroup()
-			            .addComponent(lightGrayBtn)
-			        )
-			    )
-			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-			    		.addComponent(clearBtn)
-			    		.addComponent(openBtn)
-						.addComponent(closeButton)
-						
-			    		.addComponent(saveBtn)
-			    		.addComponent(saveAsBtn)
-			    		.addComponent(currUsers)
-			    		.addComponent(tellColor)
-			    		.addComponent(displayColor)
-			    		)
-			);
-		
-		layout.setVerticalGroup(layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addGroup(layout.createSequentialGroup()
-								.addComponent(drawBtn)
-						        .addComponent(lineBtn)
-						        .addComponent(rectBtn)
-						        .addComponent(circleBtn)
-						        .addComponent(ovalBtn)
-						        .addComponent(textBtn)
-						        .addComponent(eraserBtn)
-								)
-						.addComponent(canvasUI)
-						.addGroup(layout.createSequentialGroup()
-								.addComponent(clearBtn)
-					    		.addComponent(openBtn)
-								.addComponent(closeButton)
-					    		.addComponent(saveBtn)
-					    		.addComponent(saveAsBtn)
-					    		.addComponent(currUsers)
-					    		.addComponent(tellColor)
-					    		.addComponent(displayColor)
-					    		)
-						)
-				.addGroup(layout.createSequentialGroup()
-						.addComponent(msgArea)
-						.addGroup(layout.createParallelGroup()
-								.addComponent(msgText)
-								.addComponent(sendBtn)
-								)
-						)
-				.addGroup(layout.createSequentialGroup()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(blackBtn)
-								)
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(blueBtn)
-								)
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(redBtn)
-								)
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(greenBtn)
-								)
-						)
-				.addGroup(layout.createSequentialGroup()
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-							.addComponent(orangeBtn)
-							)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-							.addComponent(yellowBtn)
-							)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-							.addComponent(limeBtn)
-							)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-							.addComponent(lightGrayBtn)
-							)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-							.addComponent(grayBtn)
-							)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-							.addComponent(pinkBtn)
-							)
-						)
-				);
-			layout.linkSize(SwingConstants.HORIZONTAL, clearBtn,saveBtn,saveAsBtn,openBtn,closeButton);
-			
-			// // 左侧按钮水平排列的分组
-			// GroupLayout.SequentialGroup leftButtonGroup = layout.createSequentialGroup()
-			// .addComponent(drawBtn)
-			// .addComponent(lineBtn)
-			// .addComponent(rectBtn)
-			// .addComponent(circleBtn)
-			// .addComponent(ovalBtn)
-			// .addComponent(textBtn)
-			// .addComponent(eraserBtn);
 
-			// // 颜色按钮垂直排列的分组
-			// GroupLayout.SequentialGroup colorButtonGroup = layout.createSequentialGroup()
-			// .addComponent(blackBtn)
-			// .addComponent(blueBtn)
-			// .addComponent(redBtn)
-			// .addComponent(greenBtn);
-
-			// // 右上角的按钮组合
-			// GroupLayout.ParallelGroup topRightGroup = layout.createParallelGroup()
-			// .addGroup(leftButtonGroup) // 添加左侧按钮
-			// .addGroup(layout.createSequentialGroup()
-			// 	.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) // 添加间距以使按钮布局更合理
-			// 	.addGroup(colorButtonGroup) // 添加颜色按钮
-			// );
-
-			// // 其他按钮和元素的垂直排列的分组
-			// GroupLayout.ParallelGroup bottomGroup = layout.createParallelGroup()
-			// .addComponent(clearBtn)
-			// .addComponent(openBtn)
-			// .addComponent(closeButton)
-			// .addComponent(saveBtn)
-			// .addComponent(saveAsBtn)
-			// .addComponent(currUsers)
-			// .addComponent(tellColor)
-			// .addComponent(displayColor);
-
-			// // 设置水平分组
-			// layout.setHorizontalGroup(layout.createSequentialGroup()
-			// .addGroup(topRightGroup) // 添加右上角的按钮组合
-			// .addGroup(layout.createParallelGroup() // 添加画布和其他按钮
-			// 	.addComponent(canvasUI)
-			// 	.addComponent(msgArea)
-			// 	.addGroup(bottomGroup)
-			// )
-			// );
-			// // 其他按钮和元素的垂直排列的分组
-			// GroupLayout.ParallelGroup bottomGroups = layout.createParallelGroup()
-			// .addComponent(clearBtn)
-			// .addComponent(openBtn)
-			// .addComponent(closeButton) // 添加 closeButton 按钮
-			// .addComponent(saveBtn)
-			// .addComponent(saveAsBtn)
-			// .addComponent(currUsers)
-			// .addComponent(tellColor)
-			// .addComponent(displayColor);
-
-			// // 设置水平分组
-			// layout.setHorizontalGroup(layout.createSequentialGroup()
-			// .addGroup(topRightGroup) // 添加右上角的按钮组合
-			// .addGroup(layout.createParallelGroup() // 添加画布和其他按钮
-			// 	.addComponent(canvasUI)
-			// 	.addComponent(msgArea)
-			// 	.addGroup(bottomGroup) // 添加其他按钮
-			// )
-			// );
-
-
-			// // 设置垂直分组
-			// layout.setVerticalGroup(layout.createSequentialGroup()
-			// .addGroup(layout.createParallelGroup() // 上方按钮组合
-			// 	.addGroup(leftButtonGroup) // 添加左侧按钮
-			// 	.addGroup(colorButtonGroup) // 添加颜色按钮
-			// )
-			// .addGroup(layout.createParallelGroup() // 中间的画布和其他按钮
-			// 	.addGroup(layout.createSequentialGroup()
-			// 		.addComponent(canvasUI)
-			// 		.addComponent(msgArea)
-			// 	)
-			// 	.addGroup(bottomGroup) // 添加其他按钮
-			// )
-			// );
-
-
-
-
-			frame.setMinimumSize(new Dimension(820, 600));
+			frame.setMinimumSize(new Dimension(900, 650));
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			frame.setVisible(true);
 			
 			managerCloseUI();		
 	} 
+
+
 
 	//if the manager close the windows
 	private void managerCloseUI(){
@@ -908,8 +712,133 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		return sendBtn;
 	}
 
-	private void setGUILayout(){
+	private void setGUILayout(Container content,JScrollPane currUsers, JScrollPane msgArea2, JButton sendBtn, JTextField msgText){
+		GroupLayout layout = new GroupLayout(content);
+		content.setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
 		
+		layout.setHorizontalGroup(layout.createSequentialGroup()
+			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER) // Use GroupLayout.Alignment.CENTER
+			        .addComponent(drawBtn)
+			        .addComponent(lineBtn)
+			        .addComponent(rectBtn)
+			        .addComponent(circleBtn)
+			        .addComponent(ovalBtn)
+			        .addComponent(textBtn)
+			        .addComponent(eraserBtn)
+			    )
+			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER) // Use GroupLayout.Alignment.CENTER
+			        .addComponent(canvasUI)
+			        .addComponent(msgArea)
+			        .addGroup(layout.createSequentialGroup()
+			            .addComponent(msgText)
+			            .addComponent(sendBtn)
+			        )
+			    )
+			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+			    		.addComponent(clearBtn)
+			    		.addComponent(openBtn)
+						.addComponent(closeButton)
+						
+			    		.addComponent(saveBtn)
+			    		.addComponent(saveAsBtn)
+			    		.addComponent(currUsers)
+			    		.addComponent(tellColor)
+			    		.addComponent(displayColor)
+					
+			        .addGroup(layout.createSequentialGroup()
+			            .addComponent(blackBtn)
+						.addComponent(orangeBtn)
+						.addComponent(grayBtn)
+						.addComponent(magentaBtn)
+			        )
+			        .addGroup(layout.createSequentialGroup()
+						.addComponent(blueBtn)
+						.addComponent(yellowBtn)
+						.addComponent(pinkBtn)
+						.addComponent(aoiBtn)
+			        )
+			        .addGroup(layout.createSequentialGroup()
+			            .addComponent(redBtn)
+						.addComponent(limeBtn)
+						.addComponent(skyBtn)
+						.addComponent(cyanBtn)
+			        )
+			        .addGroup(layout.createSequentialGroup()
+			            .addComponent(greenBtn)
+						.addComponent(lightGrayBtn)
+						.addComponent(purpleBtn)
+						.addComponent(bronBtn)
+			        )
+			    		)
+			);
+		
+		layout.setVerticalGroup(layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(drawBtn)
+						        .addComponent(lineBtn)
+						        .addComponent(rectBtn)
+						        .addComponent(circleBtn)
+						        .addComponent(ovalBtn)
+						        .addComponent(textBtn)
+						        .addComponent(eraserBtn)
+								)
+						.addComponent(canvasUI)
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(clearBtn)
+					    		.addComponent(openBtn)
+								.addComponent(closeButton)
+					    		.addComponent(saveBtn)
+					    		.addComponent(saveAsBtn)
+					    		.addComponent(currUsers)
+					    		.addComponent(tellColor)
+					    		.addComponent(displayColor)
+								.addGap(20, 20, 20)
+								.addGroup(layout.createSequentialGroup()
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+									.addGroup(layout.createSequentialGroup()
+										.addComponent(blackBtn)
+										.addComponent(blueBtn)
+										.addComponent(redBtn)
+										.addComponent(greenBtn)
+										)
+									.addGroup(layout.createSequentialGroup()
+										.addComponent(orangeBtn)
+										.addComponent(yellowBtn)
+										.addComponent(limeBtn)
+										.addComponent(lightGrayBtn)
+										)
+									.addGroup(layout.createSequentialGroup()
+										.addComponent(grayBtn)
+										.addComponent(pinkBtn)
+										.addComponent(skyBtn)
+										.addComponent(purpleBtn)
+										)
+									.addGroup(layout.createSequentialGroup()
+										.addComponent(magentaBtn)
+										.addComponent(aoiBtn)
+										.addComponent(cyanBtn)
+										.addComponent(bronBtn)
+										)
+									)
+										
+								)
+					    		)
+						
+						)
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(msgArea)
+								.addGroup(layout.createParallelGroup()
+										.addComponent(msgText)
+										.addComponent(sendBtn)
+										)
+								)
+				
+						
+				);
+				layout.linkSize(SwingConstants.HORIZONTAL, clearBtn,saveBtn,saveAsBtn,openBtn,closeButton);
 	}
 	
 

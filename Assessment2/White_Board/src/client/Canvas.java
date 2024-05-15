@@ -14,6 +14,10 @@ import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -22,8 +26,11 @@ import java.rmi.RemoteException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+
 import remote.CanvasServerInterface;
 import server.util;
+import client.Util;
 
 
 public class Canvas extends JComponent {
@@ -64,7 +71,13 @@ public class Canvas extends JComponent {
 			public void mousePressed(MouseEvent e) {
 				startPt = e.getPoint();
 				saveCanvas();
-				tryUpdate("start");
+				try {
+					Util.sendMessage("start",clientName,
+							mode,color,startPt,text,server);
+				}catch(Exception e1) {
+					
+					Util.popupDialog("Canvas server is down...");
+				}
 				
 			}
 		});
@@ -109,7 +122,12 @@ public class Canvas extends JComponent {
 					repaint();
 					
 					// try to update users' canvas
-					tryUpdate("end");
+					try {
+						Util.sendMessage("end", clientName, 
+						mode, color, endPt, text,server);
+					}catch(RemoteException e2){
+						Util.popupDialog(canvasMessage);
+					}
 				}
 			}
 		});
@@ -153,14 +171,24 @@ public class Canvas extends JComponent {
 			case "draw":
 				shape = Util.makeLine(shape, startPt, endPt);
 				startPt = endPt;
-				tryUpdate("drawing");
+				try {
+					Util.sendMessage("drawing", 
+					clientName, mode, color, endPt, "", server);
+				} catch (Exception e) {
+					Util.popupDialog(canvasMessage);
+				}
 				break;
 			case "eraser":
 				shape = Util.makeLine(shape, startPt, endPt);
 				startPt = endPt;
 				graphics.setPaint(eraserColor);
 				graphics.setStroke(new BasicStroke(15.0f));
-				tryUpdate("drawing");
+				try {
+					Util.sendMessage("drawing", 
+					clientName, mode, eraserColor, endPt, "", server);
+				} catch (Exception e) {
+					Util.popupDialog(canvasMessage);
+				}
 				break;
 			case "line":
 				drawPreviousCanvas();
@@ -219,15 +247,6 @@ public class Canvas extends JComponent {
 		g.drawImage(image,0,0,null);
 	}
 	
-
-	private void tryUpdate(String state){
-		try {
-			Util.sendMessage(state, 
-			clientName, mode, eraserColor, endPt, "", server);
-		} catch (Exception e) {
-			Util.popupDialog(canvasMessage);
-		}
-	}
 	
 	// getter functions for basic informations
 	public Color getCurrentColor() {
