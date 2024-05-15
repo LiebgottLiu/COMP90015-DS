@@ -121,7 +121,6 @@ public class CanvasServer extends UnicastRemoteObject implements CanvasServerInt
 	public byte[] sendImage() throws IOException, RemoteException {
 		byte[] currentImage = null;
 		for(CanvasClientInterface c: this.clientManager) {
-			System.out.println("we are in the for loop ");
 			if(c.getManager()) {
 				currentImage = c.sendImage();
 			}

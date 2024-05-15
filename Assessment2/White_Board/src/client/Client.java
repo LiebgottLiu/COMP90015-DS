@@ -70,13 +70,14 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	private JButton clearBtn, saveBtn, saveAsBtn, openBtn, closeButton;
 	private JButton blackBtn, blueBtn, yellowBtn, redBtn, greenBtn, pinkBtn, purpleBtn, orangeBtn, grayBtn, limeBtn, magentaBtn, aoiBtn, skyBtn, cyanBtn, lightGrayBtn,bronBtn;
 
-	private JButton drawBtn, lineBtn,rectBtn,circleBtn,ovalBtn,textBtn,eraserBtn;
+	private JButton drawBtn, lineBtn,rectBtn,circleBtn,ovalBtn,textBtn,eraserBtn,setSizeBtn;
 	private JScrollPane msgArea;
 	private JTextArea tellColor, displayColor;
 	private JList<String> chat;
 	private ArrayList<JButton> btnList;
 	private Canvas canvasUI;
 	
+	private float size ;
 	private String clientName;
 	private String picName;
 	private String picPath;
@@ -185,6 +186,28 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 						button.setBorder(empty);
 					}
 				}
+			}else if(e.getSource() == setSizeBtn){
+				
+				String input = "";
+				boolean validName = false;
+
+				while (!validName) {
+					input = JOptionPane.showInputDialog("Please enter pen size here (from 1-20):");
+					try {
+						
+						if (Float.parseFloat(input) < 1 || Float.parseFloat(input) > 20) {
+							JOptionPane.showMessageDialog(null, "Please enter a valid pen size between 1 and 20.");
+						} else {
+							validName = true;
+							// Append 'f' to convert float to string
+							size = Float.parseFloat(input+ "f") ;
+							JOptionPane.showMessageDialog(null, size);
+						}
+					} catch (NumberFormatException ex) {
+						JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.");
+					}
+				}
+
 			}
 		}
 	};
@@ -493,6 +516,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		createOvalButton(border);
 		createTextButton(border);
 		createEraserButton(border);
+		setPaintSizeButton(border);
 	}
 	
 	private void createDrawButton(LineBorder border) {
@@ -535,6 +559,12 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		Icon icon = new ImageIcon(getClass().getResource("/icon/eraser.png"));
 		JButton button = createButton(icon, "Eraser", border);
 		eraserBtn = button;
+	}
+
+	private void setPaintSizeButton(LineBorder border){
+		Icon icon = new ImageIcon(getClass().getResource("/icon/ruler.png"));
+		JButton button = createButton(icon, "Set size", border);
+		setSizeBtn = button;
 	}
 	
 	private JButton createButton(Icon icon, String toolTipText, LineBorder border) {
@@ -727,6 +757,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 			        .addComponent(ovalBtn)
 			        .addComponent(textBtn)
 			        .addComponent(eraserBtn)
+					.addComponent(setSizeBtn)
 			    )
 			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER) // Use GroupLayout.Alignment.CENTER
 			        .addComponent(canvasUI)
@@ -784,6 +815,7 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 						        .addComponent(ovalBtn)
 						        .addComponent(textBtn)
 						        .addComponent(eraserBtn)
+								.addComponent(setSizeBtn)
 								)
 						.addComponent(canvasUI)
 						.addGroup(layout.createSequentialGroup()
@@ -957,7 +989,9 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		canvasUI.getGraohic().setPaint(message.getcolor());
 		
 		if(message.getState().equals("drawing")) {
-			canvasUI.getGraohic().setStroke(new BasicStroke(1.0f));
+			String input = JOptionPane.showInputDialog("Please enter the mode:");
+			size = Float.parseFloat(input+"f");
+			canvasUI.getGraohic().setStroke(new BasicStroke(size));
 			if(message.getmode().equals("eraser")) {
 				canvasUI.getGraohic().setStroke(new BasicStroke(15.0f));
 			}
@@ -1078,36 +1112,9 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		CanvasClientInterface client = new Client();
 		
 		// verify the client name are unick
-//		UnickNameCheck(client,server);
-		
-		
-		boolean validName = false;
-		String client_Name = "";
-		while(!validName) {
-			client_Name = JOptionPane.showInputDialog("Please type your name here");
-			if(client_Name.equals("")) {
-				JOptionPane.showMessageDialog(null, "Please enter a name!");
-			}else {
-				validName = true;
-			}
-			
-			for(CanvasClientInterface c : server.getClientList()) {
-				if(client_Name.equals(c.getName()) || c.getName().equals("*"+ client_Name)) {
-					validName =false;
-					JOptionPane.showMessageDialog(null, "The name are already been token, please try differernt one");
-					
-				}
-			}
-		}
-		
-		client.setName(client_Name);
+		UnickNameCheck(client,server);
 
-		
 		try {
-			// only register if client have permission
-//			if(!client.getPermission()) {
-//				server.register(client);
-//			}	
 			server.register(client);
 		}catch(Exception e) {
 			

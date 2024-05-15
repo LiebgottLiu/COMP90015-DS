@@ -11,10 +11,9 @@ public class Server {
 	private static int serverPort;
 	
 	public static void main(String[] args) {
-//		parseArguments(args);
 
-		//serverPort = util.parseArguments(args);
-		//System.out.println(serverPort);
+		// serverPort = util.parseArguments(args);
+		// System.out.println(serverPort);
 		
 
 		// try to set server ready
