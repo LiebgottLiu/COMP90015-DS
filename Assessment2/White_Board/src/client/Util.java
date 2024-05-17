@@ -106,5 +106,24 @@ public class Util {
 		return shape;
 		
 	}
+
+
+    public static int parsePort(String port) {
+		int result = 8080;
+		try {
+			result = Integer.parseInt(port);
+	
+			if (result < 1024 || result > 65535) {
+				popupDialog("Server port number should be 1024-65535");
+				System.exit(1);
+			}
+		} catch (NumberFormatException e) {
+			popupDialog("Server port number should be an integer");
+			System.exit(1);
+		}
+	
+		return result;
+	}
+	
 	 
 }

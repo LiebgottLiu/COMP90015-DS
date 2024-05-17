@@ -76,7 +76,7 @@ public class Canvas extends JComponent {
 							mode,color,startPt,text,server);
 				}catch(Exception e1) {
 					
-					Util.popupDialog("Canvas server is down...");
+					Util.popupDialog("Canvas server is down...start");
 				}
 				
 			}

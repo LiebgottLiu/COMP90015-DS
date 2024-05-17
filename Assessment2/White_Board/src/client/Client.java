@@ -989,9 +989,9 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		canvasUI.getGraohic().setPaint(message.getcolor());
 		
 		if(message.getState().equals("drawing")) {
-			String input = JOptionPane.showInputDialog("Please enter the mode:");
-			size = Float.parseFloat(input+"f");
-			canvasUI.getGraohic().setStroke(new BasicStroke(size));
+			// String input = JOptionPane.showInputDialog("Please enter the mode:");
+			// size = Float.parseFloat(input+"f");
+			canvasUI.getGraohic().setStroke(new BasicStroke(1.0f));
 			if(message.getmode().equals("eraser")) {
 				canvasUI.getGraohic().setStroke(new BasicStroke(15.0f));
 			}
@@ -1100,14 +1100,31 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 	}
 	
 	//main functions
-	public static void main(String args[]) throws NotBoundException, NotBoundException, IOException {
+	public static void main(String[] args) throws NotBoundException, NotBoundException, IOException {
 		//set the connection informations
-		String hostName = "localhost";
-		String portNumber = "8080";
+		String hostName = "";
+		String portNumber = "";
 		String serverName = "WhiteboardServer";
-		String serverAddress = "//" + hostName+":" + portNumber + "/" + serverName;
+
+		if(args.length < 2) {
+			Util.popupDialog("Not enough argments! Should be <server address> <server port");
+			System.exit(0);
+		}
+
+		hostName = args[0]; // Assuming the first argument is the server address
+		int inputPort = Util.parsePort(args[1]); // Assuming the second argument is the server port
+		portNumber = Integer.toString(inputPort);
+		String serverAddress = "//" + hostName+":" +  portNumber + "/" + serverName;
+
+		try {
+			server = (CanvasServerInterface)Naming.lookup(serverAddress);
+		} catch (Exception e) {
+			// TODO: handle exception
+			Util.popupDialog("Cannot connect to the server please check again");
+			System.exit(0);
+		}
 		
-		server = (CanvasServerInterface)Naming.lookup(serverAddress);
+		
 		
 		CanvasClientInterface client = new Client();
 		
@@ -1130,6 +1147,8 @@ public class Client extends UnicastRemoteObject implements CanvasClientInterface
 		}
 		
 	}
+
+	
 
 
 
